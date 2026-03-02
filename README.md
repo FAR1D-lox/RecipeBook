@@ -48,8 +48,8 @@ RecipeIngredient:
 Диеты: Поддержка фильтрации по диетам (веганское, безглютеновое и т.д.).
 
 ## Технологии
-Project: Gradle - Groovy
-Configuration: YAML
-Java: 21
-Spring Boot: 3.5.11
-Dependencies: Lombok, Spring Web, Spring Security, Liquibase Migration
+Project: Gradle - Groovy  
+Configuration: YAML  
+Java: 21  
+Spring Boot: 3.5.11  
+Dependencies: Lombok, Spring Web, Spring Security, Liquibase Migration  
