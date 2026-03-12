@@ -1,0 +1,6 @@
+package ru.urfu.RecipeBook.common.enums;
+
+public enum Role {
+    ROLE_USER,
+    ROLE_ADMIN
+}
