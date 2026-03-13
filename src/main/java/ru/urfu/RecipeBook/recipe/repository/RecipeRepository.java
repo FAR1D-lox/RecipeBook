@@ -1,0 +1,12 @@
+package ru.urfu.RecipeBook.recipe.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.urfu.RecipeBook.recipe.entity.Recipe;
+
+import java.util.List;
+
+public interface RecipeRepository extends JpaRepository<Recipe, Long> {
+    List<Recipe> findRecipeById(Long authorId);
+
+    List<Recipe> findByTitleContaining(String title);
+}
