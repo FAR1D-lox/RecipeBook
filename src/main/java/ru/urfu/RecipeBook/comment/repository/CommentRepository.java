@@ -6,5 +6,5 @@ import ru.urfu.RecipeBook.comment.entity.Comment;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findByRecipeId(Long authorId);
+    List<Comment> findByRecipeId(Long recipeId);
 }

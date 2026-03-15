@@ -5,8 +5,9 @@ import ru.urfu.RecipeBook.recipe.entity.Recipe;
 
 import java.util.List;
 
+
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
-    List<Recipe> findRecipeById(Long authorId);
+    List<Recipe> findRecipesByAuthorId(Long authorId);
 
     List<Recipe> findByTitleContaining(String title);
 }
