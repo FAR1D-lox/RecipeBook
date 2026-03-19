@@ -1,18 +1,21 @@
 package ru.urfu.RecipeBook.recipe.service;
 
-import ru.urfu.RecipeBook.recipe.entity.Recipe;
+import ru.urfu.RecipeBook.recipe.dto.CreateRecipeDto;
+import ru.urfu.RecipeBook.recipe.dto.RecipeResponseDto;
 import java.util.List;
 
 
 public interface RecipeService {
 
-    Recipe createRecipe(Recipe recipe);
+    RecipeResponseDto createRecipe(Long authorId, CreateRecipeDto recipe);
 
-    List<Recipe> getAuthorRecipes(Long authorId);
+    List<RecipeResponseDto> getAuthorRecipes(Long authorId);
 
-    List <Recipe> searchRecipe(String title);
+    List <RecipeResponseDto> searchRecipe(String title);
 
-    List<Recipe> getAllRecipes();
+    RecipeResponseDto getRecipeById(Long recipeId);
+
+    List<RecipeResponseDto> getAllRecipes();
 
     void deleteRecipe(Long recipeId);
 }
