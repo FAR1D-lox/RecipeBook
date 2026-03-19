@@ -27,6 +27,11 @@ public class RecipeController {
         return recipeService.getAllRecipes();
     }
 
+    @GetMapping("/author/{authorId}")
+    public List<RecipeResponseDto> getAuthorRecipes(@PathVariable Long authorId) {
+        return recipeService.getAuthorRecipes(authorId);
+    }
+
     @GetMapping(value = "/{id}")
     public RecipeResponseDto getRecipeById(@PathVariable Long id) {
         return recipeService.getRecipeById(id);
