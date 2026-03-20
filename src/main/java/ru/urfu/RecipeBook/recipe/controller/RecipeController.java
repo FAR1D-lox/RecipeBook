@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.RecipeBook.recipe.dto.CreateRecipeDto;
 import ru.urfu.RecipeBook.recipe.dto.RecipeResponseDto;
-import ru.urfu.RecipeBook.recipe.service.impl.RecipeServiceImpl;
+import ru.urfu.RecipeBook.recipe.service.RecipeService;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RestController()
 public class RecipeController {
 
-    private final RecipeServiceImpl recipeService;
+    private final RecipeService recipeService;
 
     @PostMapping // позже переделать передачу authorId
     public RecipeResponseDto createRecipe(@RequestBody CreateRecipeDto createRecipeDto, Long authorId) {

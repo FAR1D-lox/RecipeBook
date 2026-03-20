@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-
 public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
@@ -66,9 +65,9 @@ public class RecipeServiceImpl implements RecipeService {
                         recipe.getLikesCount(),
                         recipe.getDislikesCount(),
                         recipe.getCommentsCount()
-
                 ))
                 .collect(Collectors.toList());
+
         return response;
     }
 
@@ -91,6 +90,7 @@ public class RecipeServiceImpl implements RecipeService {
 
                 ))
                 .collect(Collectors.toList());
+
         return response;
     }
 
@@ -111,9 +111,9 @@ public class RecipeServiceImpl implements RecipeService {
                     recipe.getLikesCount(),
                     recipe.getDislikesCount(),
                     recipe.getCommentsCount()
-
                 ))
                 .collect(Collectors.toList());
+
         return response;
     }
 
