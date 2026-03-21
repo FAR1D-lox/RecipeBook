@@ -5,5 +5,5 @@ import ru.urfu.RecipeBook.user.entity.User;
 
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    void deleteByUserId(Long userId);
+    void deleteById(Long userId);
 }

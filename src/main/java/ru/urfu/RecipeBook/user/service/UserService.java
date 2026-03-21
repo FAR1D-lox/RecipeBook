@@ -4,6 +4,8 @@ import ru.urfu.RecipeBook.user.entity.User;
 
 public interface UserService {
 
+    User findById(Long userId);
+
     User createUser(String name, String email, String password);
 
     void deleteUser(Long userId);
