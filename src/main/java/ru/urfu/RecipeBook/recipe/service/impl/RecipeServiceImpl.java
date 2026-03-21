@@ -26,7 +26,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public RecipeResponseDto createRecipe(Long authorId, CreateRecipeDto recipeDto) {
         Recipe recipe = new Recipe();
-        recipe.setAuthor(userRepository.getUserById(authorId));
+        recipe.setAuthor(userRepository.findById(authorId).orElseThrow(() -> new RuntimeException("user not found")));
         recipe.setCreatedAt(OffsetDateTime.now());
         recipe.setTitle(recipeDto.getTitle());
         recipe.setDescription(recipeDto.getDescription());
