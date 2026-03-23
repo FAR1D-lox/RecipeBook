@@ -1,12 +1,16 @@
 package ru.urfu.RecipeBook.recipeLikes.service;
 
+import ru.urfu.RecipeBook.recipeLikes.dto.LikesStatsDto;
+import ru.urfu.RecipeBook.recipeLikes.dto.ResponseLikeDto;
+
 public interface LikeService {
 
-    void addLike(Long recipeId, Long userId);
+    ResponseLikeDto addReaction(Long recipeId, Long userId, boolean isLike);
 
-    void addDislike(Long recipeId, Long userId);
+    void undoReaction(Long recipeId, Long userId);
 
-    void undoLikeDislike(Long recipeId, Long userId);
+    ResponseLikeDto getUserReaction(Long recipeId, Long userId);
 
-    Long getLikesCount(Long recipeId);
+    LikesStatsDto getRecipeStats(Long recipeId, Long currentUserId);
+
 }

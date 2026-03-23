@@ -1,14 +1,15 @@
 package ru.urfu.RecipeBook.favorite.service;
 
+import ru.urfu.RecipeBook.favorite.dto.ResponseFavoriteDto;
 import ru.urfu.RecipeBook.favorite.entity.Favorite;
 
 import java.util.List;
 
 public interface FavoriteService {
 
-    Favorite addFavorite(Long userId, Long recipeId);
+    ResponseFavoriteDto addFavorite(Long userId, Long recipeId);
 
-    List<Favorite> getFavoriteByUser(Long userId);
+    List<ResponseFavoriteDto> getFavoriteByUser(Long userId);
 
     void deleteFavorite(Long userId, Long recipeId);
 }

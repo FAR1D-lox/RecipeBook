@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.urfu.RecipeBook.recipe.entity.Recipe;
 import ru.urfu.RecipeBook.recipe.repository.RecipeRepository;
+import ru.urfu.RecipeBook.recipeLikes.dto.LikesStatsDto;
+import ru.urfu.RecipeBook.recipeLikes.dto.ResponseLikeDto;
 import ru.urfu.RecipeBook.recipeLikes.entity.Like;
 import ru.urfu.RecipeBook.recipeLikes.repository.LikeRepository;
 import ru.urfu.RecipeBook.recipeLikes.service.LikeService;
@@ -19,44 +21,83 @@ public class LikeServiceImpl implements LikeService {
     private final RecipeRepository recipeRepository;
 
     @Override
-    public void addLike(Long recipeId, Long userId) {
-        addLikeDislike(recipeId, userId, true);
+    public ResponseLikeDto addReaction(Long recipeId, Long userId, boolean isLike) {
 
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + recipeId));
+
+        Like exitingLike = likeRepository.findByUserIdAndRecipeId(userId, recipeId).orElse(null);
+
+        if (exitingLike != null) {
+            exitingLike.setLike(isLike);
+            Like save = likeRepository.save(exitingLike);
+            return new ResponseLikeDto(
+                    save.getRecipe().getId(),
+                    save.getUser().getId(),
+                    save.isLike(),
+                    save.getUser().getUsername(),
+                    save.getRecipe().getTitle());
+        }
+        else {
+            Like like = new Like();
+            like.setUser(user);
+            like.setRecipe(recipe);
+            like.setLike(isLike);
+
+            Like save = likeRepository.save(like);
+            return new ResponseLikeDto(
+                    save.getRecipe().getId(),
+                    save.getUser().getId(),
+                    save.isLike(),
+                    save.getUser().getUsername(),
+                    save.getRecipe().getTitle());
+        }
     }
 
     @Override
-    public void addDislike(Long recipeId, Long userId) {
-        addLikeDislike(recipeId, userId, false);
-    }
-
-    private void addLikeDislike(Long recipeId, Long userId, boolean likeDislike) {
-        likeRepository.findByUserIdAndRecipeId(userId, recipeId)
-                .ifPresentOrElse(
-                        exitingLike -> {
-                            exitingLike.setLike(likeDislike);
-                            likeRepository.save(exitingLike);
-                        },
-                        () -> {
-                            User user = userRepository.findById(userId)
-                                    .orElseThrow(() -> new RuntimeException("user not found"));
-                            Recipe recipe = recipeRepository.findById(recipeId)
-                                    .orElseThrow(() -> new RuntimeException("recipe not found"));
-                            Like like = new Like();
-                            like.setUser(user);
-                            like.setRecipe(recipe);
-                            like.setLike(likeDislike);
-                            likeRepository.save(like);
-                        }
-                );
+    public void undoReaction(Long recipeId, Long userId) {
+        Like like = likeRepository.findByUserIdAndRecipeId(userId, recipeId)
+                .orElseThrow(() -> new RuntimeException("Reaction not found"));
+        likeRepository.delete(like);
     }
 
     @Override
-    public void undoLikeDislike(Long recipeId, Long userId) {
-        likeRepository.deleteByUserIdAndRecipeId(userId, recipeId);
+    public ResponseLikeDto getUserReaction(Long recipeId, Long userId) {
+        Like like = likeRepository.findByUserIdAndRecipeId(userId, recipeId)
+                .orElseThrow(() -> new RuntimeException("Reaction not found"));
+        return new ResponseLikeDto(
+                like.getRecipe().getId(),
+                like.getUser().getId(),
+                like.isLike(),
+                like.getUser().getUsername(),
+                like.getRecipe().getTitle()
+        );
     }
 
     @Override
-    public Long getLikesCount(Long recipeId) {
-        return likeRepository.countByRecipeId(recipeId);
+    public LikesStatsDto getRecipeStats(Long recipeId, Long currentUserId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + recipeId));
+
+        Long likesCount = likeRepository.countByRecipeIdAndIsLike(recipeId, true);
+        Long dislikesCount = likeRepository.countByRecipeIdAndIsLike(recipeId, false);
+
+        Long currentUserReaction = null;
+
+        if (currentUserId != null) {
+            Long[] reactionHolder = new Long[1];
+            likeRepository.findByUserIdAndRecipeId(currentUserId, recipeId)
+                    .ifPresent(like -> reactionHolder[0] = like.isLike() ? 1L : 0L);
+            currentUserReaction = reactionHolder[0];
+        }
+
+        return new LikesStatsDto(
+                recipeId,
+                likesCount,
+                dislikesCount,
+                currentUserReaction
+        );
     }
 }

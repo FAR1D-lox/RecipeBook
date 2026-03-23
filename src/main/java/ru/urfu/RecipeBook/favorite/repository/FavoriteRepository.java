@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     List<Favorite> findByUserId(Long userId);
+    boolean existsByUserIdAndRecipeId(Long userId, Long recipeId);
 }
