@@ -1,20 +1,23 @@
 package ru.urfu.RecipeBook.user.service;
 
+import ru.urfu.RecipeBook.user.dto.CreateUserDto;
+import ru.urfu.RecipeBook.user.dto.ResponseUserDto;
+import ru.urfu.RecipeBook.user.dto.UpdateUserDto;
 import ru.urfu.RecipeBook.user.entity.User;
+
+import java.util.List;
 
 public interface UserService {
 
-    User findById(Long userId);
+    ResponseUserDto getUserById(Long userId);
 
-    User createUser(String name, String email, String password);
+    ResponseUserDto createUser(CreateUserDto createDto);
+
+    List<ResponseUserDto> getAllUsers();
+
+    List<ResponseUserDto> searchUsers(String username);
+
+    ResponseUserDto updateUser(Long userId, UpdateUserDto updateDto);
 
     void deleteUser(Long userId);
-
-    void updateUsername(Long userId, String newName);
-
-    void updateEmail(Long userId, String newEmail);
-
-    void updatePassword(Long userId, String newPassword);
-
-    void updateAvatarUrl(Long userId, String newAvatarUrl);
 }
