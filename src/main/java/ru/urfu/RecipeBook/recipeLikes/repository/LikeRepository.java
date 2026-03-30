@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface LikeRepository extends JpaRepository<Like, Long> {
     Optional<Like> findByUserIdAndRecipeId(Long userId, Long recipeId);
 
-    @Query ("SELECT COUNT(l) FROM Like l WHERE l.recipe.id = :recipeId AND l.isLike = :isLike")
-    Long countByRecipeIdAndIsLike(@Param("recipeId") Long recipeId, @Param("isLike") Boolean isLike);
+    @Query ("SELECT COUNT(l) FROM Like l WHERE l.recipe.id = :recipeId AND l.liked = :liked")
+    Long countByRecipeIdAndLiked(@Param("recipeId") Long recipeId, @Param("liked") Boolean liked);
 }

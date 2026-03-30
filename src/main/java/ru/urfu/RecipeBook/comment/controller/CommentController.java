@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @RequiredArgsConstructor
-@RequestMapping(value = "/recipe/{recipeId}/comments")
+@RequestMapping(value = "/recipes/{recipeId}/comments")
 @RestController
 public class CommentController {
     private final CommentService commentService;
