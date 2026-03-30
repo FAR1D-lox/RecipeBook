@@ -71,6 +71,8 @@ public class CommentServiceImpl implements CommentService {
         if (!comment.getAuthor().getId().equals(userId)) {
             throw new RuntimeException("you can't delete foreign comment");
         }
-
+        commentRepository.deleteById(commentId);
     }
+
+
 }

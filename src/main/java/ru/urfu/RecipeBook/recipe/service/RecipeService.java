@@ -12,7 +12,7 @@ public interface RecipeService {
 
     List<RecipeResponseDto> getAuthorRecipes(Long authorId);
 
-    List <RecipeResponseDto> searchRecipe(String title);
+    List <RecipeResponseDto> searchRecipes(String title);
 
     RecipeResponseDto getRecipeById(Long recipeId);
 

@@ -2,8 +2,10 @@ package ru.urfu.RecipeBook.recipe.service.impl;
 
 
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.urfu.RecipeBook.comment.repository.CommentRepository;
 import ru.urfu.RecipeBook.recipe.dto.CreateRecipeDto;
 import ru.urfu.RecipeBook.recipe.dto.RecipeResponseDto;
 import ru.urfu.RecipeBook.recipe.entity.Recipe;
@@ -22,6 +24,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     private final RecipeRepository recipeRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public RecipeResponseDto createRecipe(Long authorId, CreateRecipeDto recipeDto) {
@@ -37,14 +40,7 @@ public class RecipeServiceImpl implements RecipeService {
 
         Recipe saved = recipeRepository.save(recipe);
 
-        RecipeResponseDto response = new RecipeResponseDto();
-        response.setDescription(saved.getDescription());
-        response.setDifficultyLevel(saved.getDifficultyLevel());
-        response.setCookingTime(saved.getCookingTime());
-        response.setPreparationTime(saved.getPreparationTime());
-        response.setImageUrl(saved.getImageUrl());
-        response.setAuthorId(saved.getAuthor().getId());
-        response.setTitle(saved.getTitle());
+        RecipeResponseDto response = mapRecipeEntityToDto(saved);
 
         return response;
     }
@@ -52,53 +48,42 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public List<RecipeResponseDto> getAuthorRecipes(Long authorId) {
         List<Recipe> authorRecipes = recipeRepository.findRecipesByAuthorId(authorId);
-        List<RecipeResponseDto> response = authorRecipes.stream()
-                .map(recipe -> new RecipeResponseDto(
-                        recipe.getId(),
-                        recipe.getAuthor().getId(),
-                        recipe.getTitle(),
-                        recipe.getDescription(),
-                        recipe.getPreparationTime(),
-                        recipe.getCookingTime(),
-                        recipe.getDifficultyLevel(),
-                        recipe.getImageUrl(),
-                        recipe.getLikesCount(),
-                        recipe.getDislikesCount(),
-                        recipe.getCommentsCount()
-                ))
-                .collect(Collectors.toList());
-
-        return response;
+        return mapRecipeListEntitiesToDto(authorRecipes);
     }
 
     @Override
-    public List<RecipeResponseDto> searchRecipe(String title) {
+    public List<RecipeResponseDto> searchRecipes(String title) {
         List<Recipe> foundRecipes = recipeRepository.findByTitleContaining(title);
-        List<RecipeResponseDto> response = foundRecipes.stream()
-                .map(recipe -> new RecipeResponseDto(
-                        recipe.getId(),
-                        recipe.getAuthor().getId(),
-                        recipe.getTitle(),
-                        recipe.getDescription(),
-                        recipe.getPreparationTime(),
-                        recipe.getCookingTime(),
-                        recipe.getDifficultyLevel(),
-                        recipe.getImageUrl(),
-                        recipe.getLikesCount(),
-                        recipe.getDislikesCount(),
-                        recipe.getCommentsCount()
-
-                ))
-                .collect(Collectors.toList());
-
-        return response;
+        return mapRecipeListEntitiesToDto(foundRecipes);
     }
 
     @Override
     public List<RecipeResponseDto> getAllRecipes() {
         List<Recipe> allRecipes = recipeRepository.findAll();
 
-        List<RecipeResponseDto> response = allRecipes.stream()
+        return mapRecipeListEntitiesToDto(allRecipes);
+    }
+
+    @Override
+    public RecipeResponseDto getRecipeById(Long recipeId) {
+        Recipe recipe = recipeRepository.getRecipeById(recipeId);
+
+        RecipeResponseDto response = mapRecipeEntityToDto(recipe);
+
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public void deleteRecipe(Long id) {
+        if (recipeRepository.existsById(id)) {
+            commentRepository.deleteByRecipeId(id);
+            recipeRepository.deleteById(id);
+        }
+    }
+
+    private List<RecipeResponseDto> mapRecipeListEntitiesToDto(List<Recipe> RecipeEntities) {
+        return RecipeEntities.stream()
                 .map(recipe -> new RecipeResponseDto(
                     recipe.getId(),
                     recipe.getAuthor().getId(),
@@ -113,30 +98,18 @@ public class RecipeServiceImpl implements RecipeService {
                     recipe.getCommentsCount()
                 ))
                 .collect(Collectors.toList());
-
-        return response;
     }
 
-    @Override
-    public RecipeResponseDto getRecipeById(Long recipeId) {
-        Recipe recipe = recipeRepository.getRecipeById(recipeId);
-
+    private RecipeResponseDto mapRecipeEntityToDto(Recipe RecipeEntity) {
         RecipeResponseDto response = new RecipeResponseDto();
-        response.setDescription(recipe.getDescription());
-        response.setDifficultyLevel(recipe.getDifficultyLevel());
-        response.setCookingTime(recipe.getCookingTime());
-        response.setPreparationTime(recipe.getPreparationTime());
-        response.setImageUrl(recipe.getImageUrl());
-        response.setAuthorId(recipe.getAuthor().getId());
-        response.setTitle(recipe.getTitle());
+        response.setDescription(RecipeEntity.getDescription());
+        response.setDifficultyLevel(RecipeEntity.getDifficultyLevel());
+        response.setCookingTime(RecipeEntity.getCookingTime());
+        response.setPreparationTime(RecipeEntity.getPreparationTime());
+        response.setImageUrl(RecipeEntity.getImageUrl());
+        response.setAuthorId(RecipeEntity.getAuthor().getId());
+        response.setTitle(RecipeEntity.getTitle());
 
         return response;
-    }
-
-    @Override
-    public void deleteRecipe(Long id) {
-        if (recipeRepository.existsById(id)) {
-            recipeRepository.deleteById(id);
-        }
     }
 }

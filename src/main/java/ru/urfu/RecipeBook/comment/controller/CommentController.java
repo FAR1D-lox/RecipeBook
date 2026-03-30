@@ -17,7 +17,7 @@ public class CommentController {
 
     @PostMapping()
     public ResponseCommentDto addComment(@PathVariable Long recipeId,
-             Long userId, @RequestBody CreateCommentDto commentDto) {
+             @RequestParam Long userId, @RequestBody CreateCommentDto commentDto) {
         return commentService.addComment(recipeId, userId, commentDto);
     }
 
@@ -27,7 +27,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public void deleteComment(@PathVariable Long commentId, Long userId) {
+    public void deleteComment(@PathVariable Long commentId, @RequestParam Long userId, @PathVariable Long recipeId) {
         commentService.deleteComment(commentId, userId);
     }
 }

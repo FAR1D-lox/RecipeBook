@@ -18,7 +18,7 @@ public class RecipeController {
     private final RecipeService recipeService;
 
     @PostMapping // позже переделать передачу authorId
-    public RecipeResponseDto createRecipe(@RequestBody CreateRecipeDto createRecipeDto, Long authorId) {
+    public RecipeResponseDto createRecipe(@RequestBody CreateRecipeDto createRecipeDto, @RequestParam Long authorId) {
         return recipeService.createRecipe(authorId, createRecipeDto);
     }
 
@@ -38,8 +38,8 @@ public class RecipeController {
     }
 
     @GetMapping(value="/search")
-    public List<RecipeResponseDto> searchRecipe(@RequestParam String query) {
-        return recipeService.searchRecipe(query);
+    public List<RecipeResponseDto> searchRecipes(@RequestParam String query) {
+        return recipeService.searchRecipes(query);
     }
 
     @DeleteMapping(value="/{id}")
