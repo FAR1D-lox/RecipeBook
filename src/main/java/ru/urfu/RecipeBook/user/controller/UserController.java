@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping("/{userId}")
     ResponseUserDto getUserById(@PathVariable Long userId) {
@@ -47,7 +47,7 @@ public class UserController {
         return userService.updateUser(userId, updateDto);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
