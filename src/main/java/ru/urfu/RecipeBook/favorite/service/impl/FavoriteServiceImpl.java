@@ -65,7 +65,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public void deleteFavorite(Long favoriteId, Long userId) {
+    public void deleteFavorite(Long userId, Long favoriteId) {
         Favorite favorite = favoriteRepository.findById(favoriteId)
                 .orElseThrow(() -> new RuntimeException("favorite not found"));
 

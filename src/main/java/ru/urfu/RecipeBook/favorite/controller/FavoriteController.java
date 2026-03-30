@@ -29,7 +29,7 @@ public class FavoriteController {
         return favoriteService.getFavoriteByUser(userId);
     }
 
-    @DeleteMapping("/{favorite_id}")
+    @DeleteMapping("/{favoriteId}")
     public void deleteFavorite(@PathVariable Long userId, @PathVariable Long favoriteId) {
         favoriteService.deleteFavorite(userId, favoriteId);
     }

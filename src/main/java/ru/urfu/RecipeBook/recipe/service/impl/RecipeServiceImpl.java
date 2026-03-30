@@ -53,7 +53,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public List<RecipeResponseDto> searchRecipes(String title) {
-        List<Recipe> foundRecipes = recipeRepository.findByTitleContaining(title);
+        List<Recipe> foundRecipes = recipeRepository.findByTitleContainingIgnoreCase(title);
         return mapRecipeListEntitiesToDto(foundRecipes);
     }
 
