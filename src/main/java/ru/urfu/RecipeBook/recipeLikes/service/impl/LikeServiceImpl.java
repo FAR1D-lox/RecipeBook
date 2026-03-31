@@ -78,9 +78,6 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public LikesStatsDto getRecipeStats(Long recipeId, Long currentUserId) {
-        Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + recipeId));
-
         Long likesCount = likeRepository.countByRecipeIdAndLiked(recipeId, true);
         Long dislikesCount = likeRepository.countByRecipeIdAndLiked(recipeId, false);
 
