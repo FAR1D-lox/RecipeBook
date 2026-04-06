@@ -45,6 +45,4 @@ public class Recipe extends BaseEntity {
 
     private Long commentsCount = 0L;
 
-    private OffsetDateTime createdAt;
-
 }

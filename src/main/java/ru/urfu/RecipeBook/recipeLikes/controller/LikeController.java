@@ -18,7 +18,7 @@ public class LikeController {
             @PathVariable Long recipeId,
             @RequestParam Long userId,
             @RequestBody CreateLikeDto createDto) {
-        return likeService.addReaction(recipeId, userId, createDto.isLike());
+        return likeService.addReaction(recipeId, userId, createDto.isLiked());
     }
 
     @DeleteMapping

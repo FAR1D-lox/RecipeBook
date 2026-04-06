@@ -10,7 +10,7 @@ import lombok.Setter;
 public class ResponseLikeDto {
     private Long recipeId;
     private Long userId;
-    private boolean isLike;
+    private boolean liked;
     private String username;
     private String recipeTitle;
 }

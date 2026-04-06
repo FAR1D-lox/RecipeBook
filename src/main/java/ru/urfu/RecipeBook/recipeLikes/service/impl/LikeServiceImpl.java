@@ -21,7 +21,7 @@ public class LikeServiceImpl implements LikeService {
     private final RecipeRepository recipeRepository;
 
     @Override
-    public ResponseLikeDto addReaction(Long recipeId, Long userId, boolean isLike) {
+    public ResponseLikeDto addReaction(Long recipeId, Long userId, boolean liked) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
@@ -31,12 +31,12 @@ public class LikeServiceImpl implements LikeService {
         Like exitingLike = likeRepository.findByUserIdAndRecipeId(userId, recipeId).orElse(null);
 
         if (exitingLike != null) {
-            exitingLike.setLike(isLike);
+            exitingLike.setLiked(liked);
             Like save = likeRepository.save(exitingLike);
             return new ResponseLikeDto(
                     save.getRecipe().getId(),
                     save.getUser().getId(),
-                    save.isLike(),
+                    save.isLiked(),
                     save.getUser().getUsername(),
                     save.getRecipe().getTitle());
         }
@@ -44,13 +44,13 @@ public class LikeServiceImpl implements LikeService {
             Like like = new Like();
             like.setUser(user);
             like.setRecipe(recipe);
-            like.setLike(isLike);
+            like.setLiked(liked);
 
             Like save = likeRepository.save(like);
             return new ResponseLikeDto(
                     save.getRecipe().getId(),
                     save.getUser().getId(),
-                    save.isLike(),
+                    save.isLiked(),
                     save.getUser().getUsername(),
                     save.getRecipe().getTitle());
         }
@@ -70,7 +70,7 @@ public class LikeServiceImpl implements LikeService {
         return new ResponseLikeDto(
                 like.getRecipe().getId(),
                 like.getUser().getId(),
-                like.isLike(),
+                like.isLiked(),
                 like.getUser().getUsername(),
                 like.getRecipe().getTitle()
         );
@@ -78,18 +78,15 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public LikesStatsDto getRecipeStats(Long recipeId, Long currentUserId) {
-        Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + recipeId));
-
-        Long likesCount = likeRepository.countByRecipeIdAndIsLike(recipeId, true);
-        Long dislikesCount = likeRepository.countByRecipeIdAndIsLike(recipeId, false);
+        Long likesCount = likeRepository.countByRecipeIdAndLiked(recipeId, true);
+        Long dislikesCount = likeRepository.countByRecipeIdAndLiked(recipeId, false);
 
         Long currentUserReaction = null;
 
         if (currentUserId != null) {
             Long[] reactionHolder = new Long[1];
             likeRepository.findByUserIdAndRecipeId(currentUserId, recipeId)
-                    .ifPresent(like -> reactionHolder[0] = like.isLike() ? 1L : 0L);
+                    .ifPresent(like -> reactionHolder[0] = like.isLiked() ? 1L : 0L);
             currentUserReaction = reactionHolder[0];
         }
 

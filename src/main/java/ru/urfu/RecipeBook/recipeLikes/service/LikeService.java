@@ -5,7 +5,7 @@ import ru.urfu.RecipeBook.recipeLikes.dto.ResponseLikeDto;
 
 public interface LikeService {
 
-    ResponseLikeDto addReaction(Long recipeId, Long userId, boolean isLike);
+    ResponseLikeDto addReaction(Long recipeId, Long userId, boolean liked);
 
     void undoReaction(Long recipeId, Long userId);
 

@@ -26,5 +26,5 @@ public class Like extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Recipe recipe;
 
-    private boolean isLike;
+    private boolean liked;
 }
