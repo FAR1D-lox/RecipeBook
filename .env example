@@ -1,0 +1,5 @@
+POSTGRES_DB=recipe_db
+DB_USERNAME=recipe_user
+DB_PASSWORD=recipe_pass
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
