@@ -4,14 +4,18 @@ package ru.urfu.RecipeBook.recipe.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.urfu.RecipeBook.comment.repository.CommentRepository;
 import ru.urfu.RecipeBook.recipe.dto.CreateRecipeDto;
+import ru.urfu.RecipeBook.recipe.dto.CursorPageResponse;
 import ru.urfu.RecipeBook.recipe.dto.RecipeResponseDto;
 import ru.urfu.RecipeBook.recipe.entity.Recipe;
 import ru.urfu.RecipeBook.recipe.repository.RecipeRepository;
 import ru.urfu.RecipeBook.recipe.service.RecipeService;
 import ru.urfu.RecipeBook.user.repository.UserRepository;
+
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -57,16 +61,34 @@ public class RecipeServiceImpl implements RecipeService {
         return mapRecipeListEntitiesToDto(foundRecipes);
     }
 
-    @Override
-    public List<RecipeResponseDto> getAllRecipes() {
-        List<Recipe> allRecipes = recipeRepository.findAll();
 
-        return mapRecipeListEntitiesToDto(allRecipes);
+
+    public CursorPageResponse<RecipeResponseDto> getAllRecipes(Long cursor, int size) {
+        Pageable pageable = PageRequest.of(0, size + 1);
+
+        List<Recipe> recipes = recipeRepository.fetchNextPage(cursor, pageable);
+
+        boolean hasNext = recipes.size() > size;
+
+        List<Recipe> content = hasNext
+                ? recipes.subList(0, size)
+                : recipes;
+
+        Long nextCursor = hasNext
+                ? recipes.get(recipes.size() - 1).getId()
+                : null;
+
+        return new CursorPageResponse<RecipeResponseDto> (
+                mapRecipeListEntitiesToDto(content),
+                size,
+                nextCursor,
+                hasNext
+                );
     }
 
     @Override
-    public RecipeResponseDto getRecipeById(Long recipeId) {
-        Recipe recipe = recipeRepository.getRecipeById(recipeId);
+    public RecipeResponseDto findRecipeById(Long recipeId) {
+        Recipe recipe = recipeRepository.findRecipeById(recipeId);
 
         RecipeResponseDto response = mapRecipeEntityToDto(recipe);
 

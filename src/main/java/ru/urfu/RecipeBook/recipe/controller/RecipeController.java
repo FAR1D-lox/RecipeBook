@@ -5,6 +5,7 @@ package ru.urfu.RecipeBook.recipe.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.RecipeBook.recipe.dto.CreateRecipeDto;
+import ru.urfu.RecipeBook.recipe.dto.CursorPageResponse;
 import ru.urfu.RecipeBook.recipe.dto.RecipeResponseDto;
 import ru.urfu.RecipeBook.recipe.service.RecipeService;
 
@@ -23,8 +24,10 @@ public class RecipeController {
     }
 
     @GetMapping()
-    public List<RecipeResponseDto> getAllRecipes() {
-        return recipeService.getAllRecipes();
+    public CursorPageResponse<RecipeResponseDto> getAllRecipes(@RequestParam(required = false) Long cursor,
+                                            @RequestParam(defaultValue = "10") int size)
+    {
+        return recipeService.getAllRecipes(cursor, size);
     }
 
     @GetMapping("/author/{authorId}")
@@ -34,7 +37,7 @@ public class RecipeController {
 
     @GetMapping(value = "/{id}")
     public RecipeResponseDto getRecipeById(@PathVariable Long id) {
-        return recipeService.getRecipeById(id);
+        return recipeService.findRecipeById(id);
     }
 
     @GetMapping(value="/search")

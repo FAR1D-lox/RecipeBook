@@ -2,6 +2,7 @@ package ru.urfu.RecipeBook.recipe.service;
 
 
 import ru.urfu.RecipeBook.recipe.dto.CreateRecipeDto;
+import ru.urfu.RecipeBook.recipe.dto.CursorPageResponse;
 import ru.urfu.RecipeBook.recipe.dto.RecipeResponseDto;
 import java.util.List;
 
@@ -14,9 +15,9 @@ public interface RecipeService {
 
     List <RecipeResponseDto> searchRecipes(String title);
 
-    RecipeResponseDto getRecipeById(Long recipeId);
+    RecipeResponseDto findRecipeById(Long recipeId);
 
-    List<RecipeResponseDto> getAllRecipes();
+    CursorPageResponse<RecipeResponseDto> getAllRecipes(Long cursor, int size);
 
     void deleteRecipe(Long recipeId);
 }
