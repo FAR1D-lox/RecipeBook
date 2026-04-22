@@ -4,6 +4,7 @@ package ru.urfu.RecipeBook.recipe.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -61,12 +62,16 @@ public class RecipeServiceImpl implements RecipeService {
         return mapRecipeListEntitiesToDto(foundRecipes);
     }
 
-
-
     public CursorPageResponse<RecipeResponseDto> getAllRecipes(Long cursor, int size) {
-        Pageable pageable = PageRequest.of(0, size + 1);
+        if (size < 1 || size > 50) {
+            throw new IllegalArgumentException("Size must be between 1 and 100");
+        }
 
-        List<Recipe> recipes = recipeRepository.fetchNextPage(cursor, pageable);
+        if (cursor != null && cursor < 0) {
+            throw new IllegalArgumentException("Cursor must be positive");
+        }
+
+        List<Recipe> recipes = recipeRepository.fetchNextPage(cursor, Limit.of(size + 1));
 
         boolean hasNext = recipes.size() > size;
 
@@ -75,15 +80,15 @@ public class RecipeServiceImpl implements RecipeService {
                 : recipes;
 
         Long nextCursor = hasNext
-                ? recipes.get(recipes.size() - 1).getId()
+                ? content.get(size - 1).getId()
                 : null;
 
-        return new CursorPageResponse<RecipeResponseDto> (
+        return new CursorPageResponse<>(
                 mapRecipeListEntitiesToDto(content),
                 size,
                 nextCursor,
                 hasNext
-                );
+        );
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ru.urfu.RecipeBook.recipe.repository;
 
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,5 +23,5 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         WHERE (:cursor IS NULL OR r.id > :cursor)
         ORDER BY r.id ASC
     """)
-    List<Recipe> fetchNextPage(@Param("cursor") Long cursor, Pageable pageable);
+    List<Recipe> fetchNextPage(@Param("cursor") Long cursor, Limit limit);
 }

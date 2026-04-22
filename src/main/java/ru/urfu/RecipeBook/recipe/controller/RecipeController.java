@@ -24,8 +24,9 @@ public class RecipeController {
     }
 
     @GetMapping()
-    public CursorPageResponse<RecipeResponseDto> getAllRecipes(@RequestParam(required = false) Long cursor,
-                                            @RequestParam(defaultValue = "10") int size)
+    public CursorPageResponse<RecipeResponseDto> getAllRecipes(
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "10") int size)
     {
         return recipeService.getAllRecipes(cursor, size);
     }
