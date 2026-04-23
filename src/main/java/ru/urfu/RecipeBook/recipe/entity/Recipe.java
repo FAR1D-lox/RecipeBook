@@ -8,7 +8,6 @@ import lombok.Setter;
 import ru.urfu.RecipeBook.common.entities.BaseEntity;
 import ru.urfu.RecipeBook.common.enums.DifficultyLevel;
 import ru.urfu.RecipeBook.user.entity.User;
-import java.time.OffsetDateTime;
 
 
 @Entity
@@ -26,6 +25,7 @@ public class Recipe extends BaseEntity {
 
     private String title;
 
+    @Column()
     private String description;
 
     private String imageUrl;

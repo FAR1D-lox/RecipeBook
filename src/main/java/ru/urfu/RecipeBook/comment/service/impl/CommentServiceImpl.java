@@ -2,6 +2,7 @@ package ru.urfu.RecipeBook.comment.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.urfu.RecipeBook.comment.dto.CommentMapper;
 import ru.urfu.RecipeBook.comment.dto.CreateCommentDto;
 import ru.urfu.RecipeBook.comment.dto.ResponseCommentDto;
 import ru.urfu.RecipeBook.comment.entity.Comment;
@@ -22,10 +23,11 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final RecipeRepository recipeRepository;
+    private final CommentMapper commentMapper;
 
     @Override
     public ResponseCommentDto addComment(Long recipeId, Long userId, CreateCommentDto commentDto) {
-        Comment comment = new Comment();
+        Comment comment = commentMapper.toEntity(commentDto);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("user not found"));
@@ -35,32 +37,17 @@ public class CommentServiceImpl implements CommentService {
 
         comment.setAuthor(user);
         comment.setRecipe(recipe);
-        comment.setText(commentDto.getText());
 
-        Comment saved = commentRepository.save(comment);
-        ResponseCommentDto response = new ResponseCommentDto(
-                saved.getId(),
-                saved.getAuthor().getId(),
-                saved.getAuthor().getUsername(),
-                saved.getText()
-        );
+        commentRepository.save(comment);
 
-        return response;
+        return commentMapper.toCommentResponse(comment);
     }
 
     @Override
     public List<ResponseCommentDto> getCommentsByRecipe(Long recipeId) {
         List<Comment> comments = commentRepository.findByRecipeId(recipeId);
-        List<ResponseCommentDto> response = comments.stream()
-                .map(comment -> new ResponseCommentDto(
-                        comment.getId(),
-                        comment.getAuthor().getId(),
-                        comment.getAuthor().getUsername(),
-                        comment.getText()
-                ))
-                .collect(Collectors.toList());
 
-        return response;
+        return commentMapper.toListCommentResponse(comments);
     }
 
     @Override
@@ -73,6 +60,4 @@ public class CommentServiceImpl implements CommentService {
         }
         commentRepository.deleteById(commentId);
     }
-
-
 }
