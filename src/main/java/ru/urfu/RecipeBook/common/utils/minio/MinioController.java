@@ -12,7 +12,7 @@ public class MinioController {
 
     private final MinioService minioService;
     @PostMapping("/upload")
-    public String uploadObject(@RequestParam MultipartFile file, String bucketName) throws Exception {
-        return minioService.putObject(bucketName, file);
+    public String uploadObject(@RequestParam MultipartFile file, String bucketName, int compressedImageWidth, int compressedImageHeight) throws Exception {
+        return minioService.putObject(bucketName, file, compressedImageWidth, compressedImageHeight);
     }
 }
