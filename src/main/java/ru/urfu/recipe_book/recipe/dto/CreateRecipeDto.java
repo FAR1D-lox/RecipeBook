@@ -1,7 +1,7 @@
-package ru.urfu.RecipeBook.recipe.dto;
+package ru.urfu.recipe_book.recipe.dto;
 
 import lombok.*;
-import ru.urfu.RecipeBook.common.enums.DifficultyLevel;
+import ru.urfu.recipe_book.common.enums.DifficultyLevel;
 
 @Getter
 @Setter

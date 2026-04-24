@@ -1,18 +1,18 @@
-package ru.urfu.RecipeBook.recipe.service.impl;
+package ru.urfu.recipe_book.recipe.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
-import ru.urfu.RecipeBook.comment.repository.CommentRepository;
-import ru.urfu.RecipeBook.recipe.dto.CreateRecipeDto;
-import ru.urfu.RecipeBook.recipe.dto.CursorPageResponse;
-import ru.urfu.RecipeBook.recipe.dto.RecipeMapper;
-import ru.urfu.RecipeBook.recipe.dto.RecipeResponseDto;
-import ru.urfu.RecipeBook.recipe.entity.Recipe;
-import ru.urfu.RecipeBook.recipe.repository.RecipeRepository;
-import ru.urfu.RecipeBook.recipe.service.RecipeService;
-import ru.urfu.RecipeBook.user.repository.UserRepository;
+import ru.urfu.recipe_book.comment.repository.CommentRepository;
+import ru.urfu.recipe_book.recipe.dto.CreateRecipeDto;
+import ru.urfu.recipe_book.recipe.dto.CursorPageResponse;
+import ru.urfu.recipe_book.recipe.dto.RecipeMapper;
+import ru.urfu.recipe_book.recipe.dto.RecipeResponseDto;
+import ru.urfu.recipe_book.recipe.entity.Recipe;
+import ru.urfu.recipe_book.recipe.repository.RecipeRepository;
+import ru.urfu.recipe_book.recipe.service.RecipeService;
+import ru.urfu.recipe_book.user.repository.UserRepository;
 import java.util.List;
 
 

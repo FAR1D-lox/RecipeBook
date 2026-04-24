@@ -1,17 +1,17 @@
-package ru.urfu.RecipeBook.comment.service.impl;
+package ru.urfu.recipe_book.comment.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.urfu.RecipeBook.comment.dto.CommentMapper;
-import ru.urfu.RecipeBook.comment.dto.CreateCommentDto;
-import ru.urfu.RecipeBook.comment.dto.ResponseCommentDto;
-import ru.urfu.RecipeBook.comment.entity.Comment;
-import ru.urfu.RecipeBook.comment.repository.CommentRepository;
-import ru.urfu.RecipeBook.comment.service.CommentService;
-import ru.urfu.RecipeBook.recipe.entity.Recipe;
-import ru.urfu.RecipeBook.recipe.repository.RecipeRepository;
-import ru.urfu.RecipeBook.user.entity.User;
-import ru.urfu.RecipeBook.user.repository.UserRepository;
+import ru.urfu.recipe_book.comment.dto.CommentMapper;
+import ru.urfu.recipe_book.comment.dto.CreateCommentDto;
+import ru.urfu.recipe_book.comment.dto.ResponseCommentDto;
+import ru.urfu.recipe_book.comment.entity.Comment;
+import ru.urfu.recipe_book.comment.repository.CommentRepository;
+import ru.urfu.recipe_book.comment.service.CommentService;
+import ru.urfu.recipe_book.recipe.entity.Recipe;
+import ru.urfu.recipe_book.recipe.repository.RecipeRepository;
+import ru.urfu.recipe_book.user.entity.User;
+import ru.urfu.recipe_book.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,8 +1,8 @@
-package ru.urfu.RecipeBook.comment.dto;
+package ru.urfu.recipe_book.comment.dto;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.urfu.RecipeBook.comment.entity.Comment;
+import ru.urfu.recipe_book.comment.entity.Comment;
 
 import java.util.List;
 

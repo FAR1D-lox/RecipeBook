@@ -1,9 +1,9 @@
-package ru.urfu.RecipeBook.recipe.dto;
+package ru.urfu.recipe_book.recipe.dto;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import ru.urfu.RecipeBook.recipe.entity.Recipe;
+import ru.urfu.recipe_book.recipe.entity.Recipe;
 
 import java.util.List;
 
