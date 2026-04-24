@@ -2,13 +2,16 @@ package ru.urfu.recipe_book.user.service.impl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import ru.urfu.recipe_book.user.dto.CreateUserDto;
 import ru.urfu.recipe_book.user.dto.ResponseUserDto;
 import ru.urfu.recipe_book.user.dto.UpdateUserDto;
+import ru.urfu.recipe_book.user.dto.UserMapper;
 import ru.urfu.recipe_book.user.entity.User;
 import ru.urfu.recipe_book.user.repository.UserRepository;
 import ru.urfu.recipe_book.user.service.UserService;
+import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,46 +22,53 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
-    public ResponseUserDto createUser(CreateUserDto createDto) {
+    public ResponseUserDto createUser(CreateUserDto userDto) {
 
-        if (userRepository.existsByEmail(createDto.getEmail()))
+        if (userRepository.existsByEmail(userDto.getEmail()))
             throw new RuntimeException("This email already used");
-        if (userRepository.existsByUsername(createDto.getUsername()))
+        if (userRepository.existsByUsername(userDto.getUsername()))
             throw new RuntimeException("This username already used");
 
-        User user = new User();
-        user.setUsername(createDto.getUsername());
-        user.setEmail(createDto.getEmail());
-        user.setPassword(createDto.getPassword());
-
+        User user = userMapper.toEntity(userDto);
         User saved = userRepository.save(user);
-        return mapToResponseDto(saved);
+        return userMapper.toResponseUser(user);
     }
 
     public ResponseUserDto getUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("user not found"));
-        return mapToResponseDto(user);
+        return userMapper.toResponseUser(user);
     }
 
     @Override
-    public List<ResponseUserDto> getAllUsers() {
-        return userRepository
-                .findAll()
-                .stream()
-                .map(this::mapToResponseDto)
-                .collect(Collectors.toList());
-    }
+    public CursorPageResponse<ResponseUserDto> searchUsers(Long cursor, int size, String username) {
+        if (size < 1 || size > 50)
+            throw new IllegalArgumentException("Size must be between 1 and 50");
+        if (cursor != null && cursor < 0)
+            throw new IllegalArgumentException("Cursor must be positive");
 
-    @Override
-    public List<ResponseUserDto> searchUsers(String username) {
-        return userRepository
-                .findByUsernameContainingIgnoreCase(username)
-                .stream()
-                .map(this::mapToResponseDto)
-                .collect(Collectors.toList());
+        List<User> users = userRepository.
+                fetchNextPageFiltered(cursor, username, Limit.of(size + 1));
+
+        boolean hasNext = users.size() > size;
+
+        List<User> page = hasNext
+                ? users.subList(0, size)
+                : users;
+
+        Long nextCursor = hasNext
+                ? page.get(size - 1).getId()
+                : null;
+
+        return new CursorPageResponse<>(
+                userMapper.toResponseUserList(page),
+                size,
+                nextCursor,
+                hasNext
+        );
     }
 
     @Override
@@ -90,7 +100,7 @@ public class UserServiceImpl implements UserService {
             user.setAvatarUrl(updateDto.getAvatarUrl());
         }
         User updated = userRepository.save(user);
-        return mapToResponseDto(updated);
+        return userMapper.toResponseUser(updated);
 
     }
 
@@ -100,14 +110,4 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("User not found with id: " + userId);
         userRepository.deleteById(userId);
     }
-
-    private ResponseUserDto mapToResponseDto(User user) {
-        ResponseUserDto dto = new ResponseUserDto();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setAvatarUrl(user.getAvatarUrl());
-
-        return dto;
-    }
-
 }

@@ -2,7 +2,7 @@ package ru.urfu.recipe_book.recipe.service;
 
 
 import ru.urfu.recipe_book.recipe.dto.CreateRecipeDto;
-import ru.urfu.recipe_book.recipe.dto.CursorPageResponse;
+import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 import ru.urfu.recipe_book.recipe.dto.RecipeResponseDto;
 import java.util.List;
 

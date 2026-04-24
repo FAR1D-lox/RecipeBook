@@ -1,5 +1,6 @@
 package ru.urfu.recipe_book.user.service;
 
+import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 import ru.urfu.recipe_book.user.dto.CreateUserDto;
 import ru.urfu.recipe_book.user.dto.ResponseUserDto;
 import ru.urfu.recipe_book.user.dto.UpdateUserDto;
@@ -12,9 +13,7 @@ public interface UserService {
 
     ResponseUserDto createUser(CreateUserDto createDto);
 
-    List<ResponseUserDto> getAllUsers();
-
-    List<ResponseUserDto> searchUsers(String username);
+    CursorPageResponse<ResponseUserDto> searchUsers(Long cursor, int size, String username);
 
     ResponseUserDto updateUser(Long userId, UpdateUserDto updateDto);
 

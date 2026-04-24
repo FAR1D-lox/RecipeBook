@@ -6,7 +6,7 @@ import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import ru.urfu.recipe_book.comment.repository.CommentRepository;
 import ru.urfu.recipe_book.recipe.dto.CreateRecipeDto;
-import ru.urfu.recipe_book.recipe.dto.CursorPageResponse;
+import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 import ru.urfu.recipe_book.recipe.dto.RecipeMapper;
 import ru.urfu.recipe_book.recipe.dto.RecipeResponseDto;
 import ru.urfu.recipe_book.recipe.entity.Recipe;
@@ -50,7 +50,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     public CursorPageResponse<RecipeResponseDto> getAllRecipes(Long cursor, int size) {
         if (size < 1 || size > 50) {
-            throw new IllegalArgumentException("Size must be between 1 and 100");
+            throw new IllegalArgumentException("Size must be between 1 and 50");
         }
 
         if (cursor != null && cursor < 0) {

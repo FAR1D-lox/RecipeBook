@@ -1,4 +1,4 @@
-package ru.urfu.recipe_book.recipe.dto;
+package ru.urfu.recipe_book.common.entities;
 
 import java.util.List;
 

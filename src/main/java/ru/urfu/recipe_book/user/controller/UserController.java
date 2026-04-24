@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 import ru.urfu.recipe_book.user.dto.CreateUserDto;
 import ru.urfu.recipe_book.user.dto.ResponseUserDto;
 import ru.urfu.recipe_book.user.dto.UpdateUserDto;
@@ -30,14 +31,12 @@ public class UserController {
         return userService.createUser(createDto);
     }
 
-    @GetMapping
-    List<ResponseUserDto> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
     @GetMapping("/search")
-    List<ResponseUserDto> searchUsers(@RequestParam String username) {
-        return userService.searchUsers(username);
+    CursorPageResponse<ResponseUserDto> searchUsers(
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam String username) {
+        return userService.searchUsers(cursor, size, username);
     }
 
     @PutMapping("/{userId}")
