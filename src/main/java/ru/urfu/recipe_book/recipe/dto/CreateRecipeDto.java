@@ -1,13 +1,11 @@
-package ru.urfu.recipe_book.recipe.dto;
+package ru.urfu.RecipeBook.recipe.dto;
 
+import lombok.*;
+import ru.urfu.RecipeBook.common.enums.DifficultyLevel;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import ru.urfu.recipe_book.common.enums.DifficultyLevel;
-
-@Setter
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class CreateRecipeDto {
     private String title;

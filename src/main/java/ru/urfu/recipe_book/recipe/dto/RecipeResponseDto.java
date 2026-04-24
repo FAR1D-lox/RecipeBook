@@ -1,14 +1,12 @@
-package ru.urfu.recipe_book.recipe.dto;
-
-
+package ru.urfu.RecipeBook.recipe.dto;
 
 import lombok.*;
+import ru.urfu.RecipeBook.common.enums.DifficultyLevel;
 
-import ru.urfu.recipe_book.common.enums.DifficultyLevel;
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RecipeResponseDto {
         private Long id;
 

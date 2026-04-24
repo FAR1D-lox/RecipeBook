@@ -1,13 +1,13 @@
-package ru.urfu.recipe_book.recipe.entity;
+package ru.urfu.RecipeBook.recipe.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.urfu.recipe_book.common.entities.BaseEntity;
-import ru.urfu.recipe_book.common.enums.DifficultyLevel;
-import ru.urfu.recipe_book.user.entity.User;
+import ru.urfu.RecipeBook.common.entities.BaseEntity;
+import ru.urfu.RecipeBook.common.enums.DifficultyLevel;
+import ru.urfu.RecipeBook.user.entity.User;
 
 
 @Entity
@@ -25,6 +25,7 @@ public class Recipe extends BaseEntity {
 
     private String title;
 
+    @Column()
     private String description;
 
     private String imageUrl;
