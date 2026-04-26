@@ -7,12 +7,15 @@ import org.springframework.data.repository.query.Param;
 import ru.urfu.recipe_book.user.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface UserRepository extends JpaRepository<User, Long> {
     void deleteById(Long userId);
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
+    Optional<User> findByEmail(String email);
+
     @Query("""
             SELECT u FROM User as u
             WHERE u.username LIKE %:username%

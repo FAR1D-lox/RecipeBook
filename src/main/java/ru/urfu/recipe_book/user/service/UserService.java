@@ -2,6 +2,7 @@ package ru.urfu.recipe_book.user.service;
 
 import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 import ru.urfu.recipe_book.user.dto.CreateUserDto;
+import ru.urfu.recipe_book.user.dto.LoginUserDto;
 import ru.urfu.recipe_book.user.dto.ResponseUserDto;
 import ru.urfu.recipe_book.user.dto.UpdateUserDto;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface UserService {
 
-    ResponseUserDto getUserById(Long userId);
+    String authenticate(LoginUserDto loginDto);
 
     ResponseUserDto createUser(CreateUserDto createDto);
 

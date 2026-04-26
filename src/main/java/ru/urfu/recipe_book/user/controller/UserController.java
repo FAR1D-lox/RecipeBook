@@ -7,11 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 import ru.urfu.recipe_book.user.dto.CreateUserDto;
+import ru.urfu.recipe_book.user.dto.LoginUserDto;
 import ru.urfu.recipe_book.user.dto.ResponseUserDto;
 import ru.urfu.recipe_book.user.dto.UpdateUserDto;
 import ru.urfu.recipe_book.user.service.UserService;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,15 +19,15 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{userId}")
-    ResponseUserDto getUserById(@PathVariable Long userId) {
-        return userService.getUserById(userId);
-    }
-
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseUserDto register(@Valid @RequestBody CreateUserDto createDto) {
         return userService.createUser(createDto);
+    }
+
+    @PostMapping("/login")
+    String login (@RequestBody LoginUserDto loginDto) {
+        return userService.authenticate(loginDto);
     }
 
     @GetMapping("/search")

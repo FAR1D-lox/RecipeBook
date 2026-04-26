@@ -3,18 +3,20 @@ package ru.urfu.recipe_book.user.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Limit;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.urfu.recipe_book.user.dto.CreateUserDto;
-import ru.urfu.recipe_book.user.dto.ResponseUserDto;
-import ru.urfu.recipe_book.user.dto.UpdateUserDto;
-import ru.urfu.recipe_book.user.dto.UserMapper;
+import ru.urfu.recipe_book.common.enums.Role;
+import ru.urfu.recipe_book.config.JwtService;
+import ru.urfu.recipe_book.user.dto.*;
 import ru.urfu.recipe_book.user.entity.User;
 import ru.urfu.recipe_book.user.repository.UserRepository;
 import ru.urfu.recipe_book.user.service.UserService;
 import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public ResponseUserDto createUser(CreateUserDto userDto) {
@@ -33,14 +37,27 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("This username already used");
 
         User user = userMapper.toEntity(userDto);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.USER);
         User saved = userRepository.save(user);
-        return userMapper.toResponseUser(user);
+        return userMapper.toResponseUser(saved);
     }
 
-    public ResponseUserDto getUserById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("user not found"));
-        return userMapper.toResponseUser(user);
+    @Override
+    public String authenticate(LoginUserDto loginDto) {
+        User user = userRepository.findByEmail(loginDto.email())
+                .orElseThrow(() -> new BadCredentialsException("Invalid email"));
+        if (!passwordEncoder.matches(loginDto.password(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+        );
+
+        return jwtService.generateToken(userDetails);
     }
 
     @Override
@@ -93,7 +110,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (updateDto.getPassword() != null) {
-            user.setPassword(updateDto.getPassword());
+            user.setPassword(passwordEncoder.encode(updateDto.getPassword()));
         }
 
         if (updateDto.getAvatarUrl() != null) {
