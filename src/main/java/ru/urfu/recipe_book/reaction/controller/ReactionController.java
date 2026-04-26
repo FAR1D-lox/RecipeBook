@@ -1,6 +1,7 @@
 package ru.urfu.recipe_book.reaction.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.recipe_book.reaction.dto.CreateReactionDto;
 import ru.urfu.recipe_book.reaction.dto.ReactionStatsDto;
@@ -16,29 +17,33 @@ public class ReactionController {
     @PostMapping
     public ResponseReactionDto addReaction(
             @PathVariable Long recipeId,
-            @RequestParam Long userId,
+            Authentication authentication,
             @RequestBody CreateReactionDto createDto) {
-        return reactionService.addReaction(recipeId, userId, createDto.isLiked());
+        String email = authentication.getName();
+        return reactionService.addReaction(recipeId, email, createDto.isLiked());
     }
 
     @DeleteMapping
     void undoLikeDislike(
             @PathVariable Long recipeId,
-            @RequestParam Long userId) {
-        reactionService.undoReaction(recipeId, userId);
+            Authentication authentication) {
+        String email = authentication.getName();
+        reactionService.undoReaction(recipeId, email);
     }
 
-    @GetMapping("user/{userId}")
+    @GetMapping("/user")
     public ResponseReactionDto getUserReaction(
             @PathVariable Long recipeId,
-            @PathVariable Long userId) {
-        return reactionService.getUserReaction(recipeId, userId);
+            Authentication authentication) {
+        String email = authentication.getName();
+        return reactionService.getUserReaction(recipeId, email);
     }
 
     @GetMapping("/stats")
     public ReactionStatsDto getRecipeStats(
             @PathVariable Long recipeId,
-            @RequestParam(required = false) Long userId) {
-        return reactionService.getRecipeStats(recipeId, userId);
+            Authentication authentication) {
+        String email = authentication.getName();
+        return reactionService.getRecipeStats(recipeId, email);
     }
 }
