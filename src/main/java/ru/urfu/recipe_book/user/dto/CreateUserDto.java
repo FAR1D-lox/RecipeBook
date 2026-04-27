@@ -5,6 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import ru.urfu.recipe_book.common.enums.PreferenceTag;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -21,4 +25,6 @@ public class CreateUserDto {
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
+
+    private Set<PreferenceTag> preferences = new HashSet<>();
 }

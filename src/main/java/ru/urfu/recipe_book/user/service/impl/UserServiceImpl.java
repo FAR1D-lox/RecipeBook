@@ -8,7 +8,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.urfu.recipe_book.comment.repository.CommentRepository;
 import ru.urfu.recipe_book.common.enums.Role;
+import ru.urfu.recipe_book.favorite.repository.FavoriteRepository;
+import ru.urfu.recipe_book.reaction.repository.ReactionRepository;
+import ru.urfu.recipe_book.recipe.repository.RecipeRepository;
 import ru.urfu.recipe_book.security.JwtService;
 import ru.urfu.recipe_book.user.dto.*;
 import ru.urfu.recipe_book.user.entity.User;
@@ -27,6 +31,10 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final ReactionRepository reactionRepository;
+    private final CommentRepository commentRepository;
+    private final RecipeRepository recipeRepository;
+    private final FavoriteRepository favoriteRepository;
 
     @Override
     public ResponseUserDto createUser(CreateUserDto userDto) {
@@ -116,15 +124,28 @@ public class UserServiceImpl implements UserService {
         if (updateDto.getAvatarUrl() != null) {
             user.setAvatarUrl(updateDto.getAvatarUrl());
         }
+        if (updateDto.getPreferences() != null) {
+            user.setPreferences(updateDto.getPreferences());
+        }
+
         User updated = userRepository.save(user);
         return userMapper.toResponseUser(updated);
 
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long userId) {
         if (!userRepository.existsById(userId))
             throw new RuntimeException("User not found with id: " + userId);
+
+        User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        reactionRepository.deleteByUser(user);
+        commentRepository.deleteByAuthor(user);
+        recipeRepository.deleteByAuthor(user);
+        favoriteRepository.deleteByUser(user);
+
         userRepository.deleteById(userId);
     }
 }

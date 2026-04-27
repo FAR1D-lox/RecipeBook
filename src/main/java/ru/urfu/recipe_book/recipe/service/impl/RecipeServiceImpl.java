@@ -15,6 +15,7 @@ import ru.urfu.recipe_book.recipe.repository.RecipeRepository;
 import ru.urfu.recipe_book.recipe.service.RecipeService;
 import ru.urfu.recipe_book.user.repository.UserRepository;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,7 @@ public class RecipeServiceImpl implements RecipeService {
     public RecipeResponseDto createRecipe(Long authorId, CreateRecipeDto recipeDto) {
         Recipe recipe = recipeMapper.toEntity(recipeDto);
         recipe.setAuthor(userRepository.findById(authorId).orElseThrow(() -> new RuntimeException("user not found")));
+        recipe.setCreatedAt(OffsetDateTime.now());
         recipeRepository.save(recipe);
         return putHtml(recipe);
     }

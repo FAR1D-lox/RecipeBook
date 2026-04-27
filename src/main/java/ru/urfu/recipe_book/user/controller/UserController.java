@@ -40,16 +40,16 @@ public class UserController {
         return userService.searchUsers(cursor, size, username);
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping()
     ResponseUserDto updateUser(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody UpdateUserDto updateDto) {
         return userService.updateUser(customUserDetails.getUserId(), updateDto);
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping()
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+    void deleteUser(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        userService.deleteUser(customUserDetails.getUserId());
     }
 }
