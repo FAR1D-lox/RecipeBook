@@ -1,10 +1,12 @@
 package ru.urfu.recipe_book.comment.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.recipe_book.comment.dto.CreateCommentDto;
 import ru.urfu.recipe_book.comment.dto.ResponseCommentDto;
 import ru.urfu.recipe_book.comment.service.CommentService;
+import ru.urfu.recipe_book.security.CustomUserDetails;
 
 import java.util.List;
 
@@ -17,8 +19,9 @@ public class CommentController {
 
     @PostMapping()
     public ResponseCommentDto addComment(@PathVariable Long recipeId,
-             @RequestParam Long userId, @RequestBody CreateCommentDto commentDto) {
-        return commentService.addComment(recipeId, userId, commentDto);
+                                         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                         @RequestBody CreateCommentDto commentDto) {
+        return commentService.addComment(recipeId, customUserDetails.getUserId(), commentDto);
     }
 
     @GetMapping
@@ -27,7 +30,8 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public void deleteComment(@PathVariable Long commentId, @RequestParam Long userId, @PathVariable Long recipeId) {
-        commentService.deleteComment(commentId, userId);
+    public void deleteComment(@PathVariable Long commentId,
+                              @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long recipeId) {
+        commentService.deleteComment(commentId, userDetails.getUserId());
     }
 }

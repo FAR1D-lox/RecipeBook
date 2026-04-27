@@ -8,6 +8,8 @@ import ru.urfu.recipe_book.comment.dto.ResponseCommentDto;
 import ru.urfu.recipe_book.comment.entity.Comment;
 import ru.urfu.recipe_book.comment.repository.CommentRepository;
 import ru.urfu.recipe_book.comment.service.CommentService;
+import ru.urfu.recipe_book.common.markdown.MarkdownService;
+import ru.urfu.recipe_book.recipe.dto.RecipeResponseDto;
 import ru.urfu.recipe_book.recipe.entity.Recipe;
 import ru.urfu.recipe_book.recipe.repository.RecipeRepository;
 import ru.urfu.recipe_book.user.entity.User;
@@ -24,6 +26,23 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final RecipeRepository recipeRepository;
     private final CommentMapper commentMapper;
+    private final MarkdownService markdownService;
+
+    private ResponseCommentDto putHtml(Comment comment) {
+        ResponseCommentDto dto = commentMapper.toCommentResponse(comment);
+        if (comment.getText() != null) {
+            String html = markdownService.render(comment.getText());
+            dto.setText(html);
+        }
+
+        return dto;
+    }
+
+    private List<ResponseCommentDto> putListHtml(List<Comment> comments) {
+        return comments.stream()
+                .map(this::putHtml)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public ResponseCommentDto addComment(Long recipeId, Long userId, CreateCommentDto commentDto) {
@@ -47,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
     public List<ResponseCommentDto> getCommentsByRecipe(Long recipeId) {
         List<Comment> comments = commentRepository.findByRecipeId(recipeId);
 
-        return commentMapper.toListCommentResponse(comments);
+        return putListHtml(comments);
     }
 
     @Override

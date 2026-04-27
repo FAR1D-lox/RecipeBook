@@ -2,10 +2,12 @@ package ru.urfu.recipe_book.favorite.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.recipe_book.favorite.dto.CreateFavoriteDto;
 import ru.urfu.recipe_book.favorite.dto.ResponseFavoriteDto;
 import ru.urfu.recipe_book.favorite.service.FavoriteService;
+import ru.urfu.recipe_book.security.CustomUserDetails;
 
 import java.util.List;
 
@@ -18,20 +20,20 @@ public class FavoriteController {
 
     @PostMapping
     public ResponseFavoriteDto addFavorite(
-            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody CreateFavoriteDto createDto) {
-        return favoriteService.addFavorite(userId, createDto.getRecipeId());
+        return favoriteService.addFavorite(customUserDetails.getUserId(), createDto.getRecipeId());
     }
 
     @GetMapping
     public List<ResponseFavoriteDto> getFavoriteByUser(
-            @PathVariable Long userId) {
-        return favoriteService.getFavoriteByUser(userId);
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return favoriteService.getFavoriteByUser(customUserDetails.getUserId());
     }
 
     @DeleteMapping("/{favoriteId}")
-    public void deleteFavorite(@PathVariable Long userId, @PathVariable Long favoriteId) {
-        favoriteService.deleteFavorite(userId, favoriteId);
+    public void deleteFavorite(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                               @PathVariable Long favoriteId) {
+        favoriteService.deleteFavorite(customUserDetails.getUserId(), favoriteId);
     }
-
 }

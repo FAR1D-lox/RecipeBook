@@ -5,7 +5,6 @@ import org.mapstruct.Mapping;
 
 import ru.urfu.recipe_book.recipe.entity.Recipe;
 
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface RecipeMapper {
@@ -20,8 +19,6 @@ public interface RecipeMapper {
     Recipe toEntity(CreateRecipeDto createDto);
 
     @Mapping(target = "authorId", source = "author.id")
+    @Mapping(target = "description", ignore = true)
     RecipeResponseDto toRecipeResponse(Recipe recipe);
-
-    List<RecipeResponseDto> toRecipeResponseList(List<Recipe> recipeList);
-
 }

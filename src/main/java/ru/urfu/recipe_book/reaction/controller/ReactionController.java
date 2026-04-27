@@ -2,11 +2,13 @@ package ru.urfu.recipe_book.reaction.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.recipe_book.reaction.dto.CreateReactionDto;
 import ru.urfu.recipe_book.reaction.dto.ReactionStatsDto;
 import ru.urfu.recipe_book.reaction.dto.ResponseReactionDto;
 import ru.urfu.recipe_book.reaction.service.ReactionService;
+import ru.urfu.recipe_book.security.CustomUserDetails;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,33 +19,29 @@ public class ReactionController {
     @PostMapping
     public ResponseReactionDto addReaction(
             @PathVariable Long recipeId,
-            Authentication authentication,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody CreateReactionDto createDto) {
-        String email = authentication.getName();
-        return reactionService.addReaction(recipeId, email, createDto.isLiked());
+        return reactionService.addReaction(recipeId, customUserDetails.getUserId(), createDto.isLiked());
     }
 
     @DeleteMapping
     void undoLikeDislike(
             @PathVariable Long recipeId,
-            Authentication authentication) {
-        String email = authentication.getName();
-        reactionService.undoReaction(recipeId, email);
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        reactionService.undoReaction(recipeId, customUserDetails.getUserId());
     }
 
     @GetMapping("/user")
     public ResponseReactionDto getUserReaction(
             @PathVariable Long recipeId,
-            Authentication authentication) {
-        String email = authentication.getName();
-        return reactionService.getUserReaction(recipeId, email);
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return reactionService.getUserReaction(recipeId, customUserDetails.getUserId());
     }
 
     @GetMapping("/stats")
     public ReactionStatsDto getRecipeStats(
             @PathVariable Long recipeId,
-            Authentication authentication) {
-        String email = authentication.getName();
-        return reactionService.getRecipeStats(recipeId, email);
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return reactionService.getRecipeStats(recipeId, customUserDetails.getUserId());
     }
 }

@@ -21,10 +21,10 @@ public class ReactionServiceImpl implements ReactionService {
     private final RecipeRepository recipeRepository;
 
     @Override
-    public ResponseReactionDto addReaction(Long recipeId, String email, boolean liked) {
+    public ResponseReactionDto addReaction(Long recipeId, Long userId, boolean liked) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new RuntimeException("Recipe not found with id: " + recipeId));
 
@@ -57,18 +57,18 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
-    public void undoReaction(Long recipeId, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+    public void undoReaction(Long recipeId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         Reaction reaction = reactionRepository.findByUserAndRecipeId(user, recipeId)
                 .orElseThrow(() -> new RuntimeException("Reaction not found"));
         reactionRepository.delete(reaction);
     }
 
     @Override
-    public ResponseReactionDto getUserReaction(Long recipeId, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+    public ResponseReactionDto getUserReaction(Long recipeId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         Reaction reaction = reactionRepository.findByUserAndRecipeId(user, recipeId)
                 .orElseThrow(() -> new RuntimeException("Reaction not found"));
         return new ResponseReactionDto(
@@ -81,12 +81,12 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
-    public ReactionStatsDto getRecipeStats(Long recipeId, String email) {
+    public ReactionStatsDto getRecipeStats(Long recipeId, Long userId) {
         Long likesCount = reactionRepository.countByRecipeIdAndLiked(recipeId, true);
         Long dislikesCount = reactionRepository.countByRecipeIdAndLiked(recipeId, false);
 
         Long currentUserReaction = null;
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findById(userId)
                 .orElseThrow(null);
 
         if (user != null) {

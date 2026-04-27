@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import ru.urfu.recipe_book.comment.repository.CommentRepository;
+import ru.urfu.recipe_book.common.markdown.MarkdownService;
 import ru.urfu.recipe_book.recipe.dto.CreateRecipeDto;
 import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 import ru.urfu.recipe_book.recipe.dto.RecipeMapper;
@@ -13,8 +14,9 @@ import ru.urfu.recipe_book.recipe.entity.Recipe;
 import ru.urfu.recipe_book.recipe.repository.RecipeRepository;
 import ru.urfu.recipe_book.recipe.service.RecipeService;
 import ru.urfu.recipe_book.user.repository.UserRepository;
-import java.util.List;
 
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,28 +26,41 @@ public class RecipeServiceImpl implements RecipeService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final RecipeMapper recipeMapper;
+    private final MarkdownService markdownService;
+
+    private RecipeResponseDto putHtml(Recipe recipe) {
+        RecipeResponseDto dto = recipeMapper.toRecipeResponse(recipe);
+        if (recipe.getDescription() != null) {
+            String html = markdownService.render(recipe.getDescription());
+            dto.setDescription(html);
+        }
+        return dto;
+    }
+
+    private List<RecipeResponseDto> putListHtml(List<Recipe> recipes) {
+        return recipes.stream()
+                .map(this::putHtml)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public RecipeResponseDto createRecipe(Long authorId, CreateRecipeDto recipeDto) {
         Recipe recipe = recipeMapper.toEntity(recipeDto);
         recipe.setAuthor(userRepository.findById(authorId).orElseThrow(() -> new RuntimeException("user not found")));
         recipeRepository.save(recipe);
-
-        return recipeMapper.toRecipeResponse(recipe);
+        return putHtml(recipe);
     }
 
     @Override
     public List<RecipeResponseDto> getAuthorRecipes(Long authorId) {
         List<Recipe> authorRecipes = recipeRepository.findRecipesByAuthorId(authorId);
-
-        return recipeMapper.toRecipeResponseList(authorRecipes);
+        return putListHtml(authorRecipes);
     }
 
     @Override
     public List<RecipeResponseDto> searchRecipes(String title) {
         List<Recipe> foundRecipes = recipeRepository.findByTitleContainingIgnoreCase(title);
-
-        return recipeMapper.toRecipeResponseList(foundRecipes);
+        return putListHtml(foundRecipes);
     }
 
     public CursorPageResponse<RecipeResponseDto> getAllRecipes(Long cursor, int size) {
@@ -70,7 +85,7 @@ public class RecipeServiceImpl implements RecipeService {
                 : null;
 
         return new CursorPageResponse<>(
-                recipeMapper.toRecipeResponseList(content),
+                putListHtml(content),
                 size,
                 nextCursor,
                 hasNext
@@ -80,15 +95,16 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public RecipeResponseDto findRecipeById(Long recipeId) {
         Recipe recipe = recipeRepository.findRecipeById(recipeId);
-
-        return recipeMapper.toRecipeResponse(recipe);
+        return putHtml(recipe);
     }
 
-    @Override
     @Transactional
-    public void deleteRecipe(Long id) {
+    public void deleteRecipe(Long id, Long userId) {
         if (recipeRepository.existsById(id)) {
             commentRepository.deleteByRecipeId(id);
+            if (!recipeRepository.findRecipeById(id).getAuthor().getId().equals(userId)) {
+                throw new RuntimeException("you can't delete foreign recipe");
+            }
             recipeRepository.deleteById(id);
         }
     }

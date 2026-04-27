@@ -4,8 +4,10 @@ package ru.urfu.recipe_book.user.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.recipe_book.common.entities.CursorPageResponse;
+import ru.urfu.recipe_book.security.CustomUserDetails;
 import ru.urfu.recipe_book.user.dto.CreateUserDto;
 import ru.urfu.recipe_book.user.dto.LoginUserDto;
 import ru.urfu.recipe_book.user.dto.ResponseUserDto;
@@ -40,9 +42,9 @@ public class UserController {
 
     @PutMapping("/{userId}")
     ResponseUserDto updateUser(
-            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody UpdateUserDto updateDto) {
-        return userService.updateUser(userId, updateDto);
+        return userService.updateUser(customUserDetails.getUserId(), updateDto);
     }
 
     @DeleteMapping("/{userId}")

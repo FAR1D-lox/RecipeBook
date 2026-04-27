@@ -19,5 +19,5 @@ public interface RecipeService {
 
     CursorPageResponse<RecipeResponseDto> getAllRecipes(Long cursor, int size);
 
-    void deleteRecipe(Long recipeId);
+    void deleteRecipe(Long recipeId, Long userId);
 }

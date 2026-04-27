@@ -25,7 +25,7 @@ public class Recipe extends BaseEntity {
 
     private String title;
 
-    @Column()
+    @Column(columnDefinition="TEXT")
     private String description;
 
     private String imageUrl;
