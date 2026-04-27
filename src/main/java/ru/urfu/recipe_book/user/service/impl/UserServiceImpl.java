@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.urfu.recipe_book.common.enums.Role;
-import ru.urfu.recipe_book.config.JwtService;
+import ru.urfu.recipe_book.security.JwtService;
 import ru.urfu.recipe_book.user.dto.*;
 import ru.urfu.recipe_book.user.entity.User;
 import ru.urfu.recipe_book.user.repository.UserRepository;
@@ -45,14 +45,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String authenticate(LoginUserDto loginDto) {
-        User user = userRepository.findByEmail(loginDto.email())
-                .orElseThrow(() -> new BadCredentialsException("Invalid email"));
+        User user = userRepository.findByUsername(loginDto.username())
+                .orElseThrow(() -> new BadCredentialsException("Invalid username"));
         if (!passwordEncoder.matches(loginDto.password(), user.getPassword())) {
             throw new BadCredentialsException("Invalid password");
         }
 
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
+                user.getUsername(),
                 user.getPassword(),
                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
         );

@@ -1,4 +1,4 @@
-package ru.urfu.recipe_book.config;
+package ru.urfu.recipe_book.security;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;

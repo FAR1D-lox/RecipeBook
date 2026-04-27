@@ -25,4 +25,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> fetchNextPageFiltered(@Param("cursor") Long cursor,
                                      @Param("username") String username,
                                      Limit limit);
+
+    Optional<User> findByUsername(String username);
 }

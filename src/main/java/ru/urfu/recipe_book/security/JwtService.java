@@ -1,4 +1,4 @@
-package ru.urfu.recipe_book.config;
+package ru.urfu.recipe_book.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
