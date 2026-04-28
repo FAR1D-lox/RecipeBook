@@ -14,7 +14,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void deleteById(Long userId);
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
-    Optional<User> findByEmail(String email);
 
     @Query("""
             SELECT u FROM User as u

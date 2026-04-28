@@ -6,7 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.urfu.recipe_book.common.entities.BaseEntity;
+import ru.urfu.recipe_book.common.enums.PreferenceTag;
 import ru.urfu.recipe_book.common.enums.Role;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -27,4 +31,11 @@ public class User extends BaseEntity {
     private boolean isActive;
 
     private Role role;
+
+    @ElementCollection
+    @CollectionTable(name = "user_preferences",
+    joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "preference")
+    private Set<PreferenceTag> preferences = new HashSet<>();
 }

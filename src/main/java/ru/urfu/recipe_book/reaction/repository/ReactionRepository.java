@@ -1,6 +1,7 @@
 package ru.urfu.recipe_book.reaction.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.urfu.recipe_book.reaction.entity.Reaction;
@@ -15,4 +16,6 @@ ReactionRepository extends JpaRepository<Reaction, Long> {
 
     @Query ("SELECT COUNT(1) FROM Reaction l WHERE l.recipe.id = :recipeId AND l.liked = :liked")
     Long countByRecipeIdAndLiked(@Param("recipeId") Long recipeId, @Param("liked") Boolean liked);
+
+    void deleteByUser(User user);
 }

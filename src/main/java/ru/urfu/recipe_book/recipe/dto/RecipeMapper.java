@@ -11,8 +11,6 @@ public interface RecipeMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "author", ignore = true)
     @Mapping(target = "viewsCount", ignore = true)
-    @Mapping(target = "likesCount", ignore = true)
-    @Mapping(target = "dislikesCount", ignore = true)
     @Mapping(target = "commentsCount", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

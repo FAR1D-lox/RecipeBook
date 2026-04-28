@@ -2,9 +2,11 @@ package ru.urfu.recipe_book.recipe.repository;
 
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.urfu.recipe_book.recipe.entity.Recipe;
+import ru.urfu.recipe_book.user.entity.User;
 
 
 import java.util.List;
@@ -23,4 +25,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         ORDER BY r.id ASC
     """)
     List<Recipe> fetchNextPage(@Param("cursor") Long cursor, Limit limit);
+
+    List<Recipe> findTop1000ByOrderByCreatedAtDesc();
+
+    void deleteByAuthor(User user);
 }
