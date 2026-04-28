@@ -33,6 +33,7 @@ public class CommentServiceImpl implements CommentService {
         if (comment.getText() != null) {
             String html = markdownService.render(comment.getText());
             dto.setText(html);
+            dto.setAuthorUsername(comment.getAuthor().getUsername());
         }
 
         return dto;
@@ -59,7 +60,7 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.save(comment);
 
-        return commentMapper.toCommentResponse(comment);
+        return putHtml(comment);
     }
 
     @Override
