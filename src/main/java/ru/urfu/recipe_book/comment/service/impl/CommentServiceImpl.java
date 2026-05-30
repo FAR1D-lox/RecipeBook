@@ -8,6 +8,8 @@ import ru.urfu.recipe_book.comment.dto.ResponseCommentDto;
 import ru.urfu.recipe_book.comment.entity.Comment;
 import ru.urfu.recipe_book.comment.repository.CommentRepository;
 import ru.urfu.recipe_book.comment.service.CommentService;
+import ru.urfu.recipe_book.common.exception.ForbiddenOperationException;
+import ru.urfu.recipe_book.common.exception.ResourceNotFoundException;
 import ru.urfu.recipe_book.common.markdown.MarkdownService;
 import ru.urfu.recipe_book.recipe.dto.RecipeResponseDto;
 import ru.urfu.recipe_book.recipe.entity.Recipe;
@@ -50,10 +52,10 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentMapper.toEntity(commentDto);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("user not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Recipe recipe = recipeRepository.findById(recipeId)
-                .orElseThrow(() -> new RuntimeException("recipe not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
 
         comment.setAuthor(user);
         comment.setRecipe(recipe);
@@ -73,10 +75,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteComment(Long commentId, Long userId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
         if (!comment.getAuthor().getId().equals(userId)) {
-            throw new RuntimeException("you can't delete foreign comment");
+            throw new ForbiddenOperationException("You can't delete foreign comment");
         }
         commentRepository.deleteById(commentId);
     }

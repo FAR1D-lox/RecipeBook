@@ -1,6 +1,8 @@
 package ru.urfu.recipe_book.comment.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.recipe_book.comment.dto.CreateCommentDto;
@@ -18,20 +20,23 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping()
-    public ResponseCommentDto addComment(@PathVariable Long recipeId,
-                                         @AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                         @RequestBody CreateCommentDto commentDto) {
-        return commentService.addComment(recipeId, customUserDetails.getUserId(), commentDto);
+    public ResponseEntity<ResponseCommentDto> addComment(@PathVariable Long recipeId,
+                                                         @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                         @RequestBody CreateCommentDto commentDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(commentService.addComment(recipeId, customUserDetails.getUserId(), commentDto));
     }
 
     @GetMapping
-    public List<ResponseCommentDto> getCommentsByRecipe(@PathVariable Long recipeId) {
-        return commentService.getCommentsByRecipe(recipeId);
+    public ResponseEntity<List<ResponseCommentDto>> getCommentsByRecipe(@PathVariable Long recipeId) {
+        return ResponseEntity.ok(commentService.getCommentsByRecipe(recipeId));
     }
 
     @DeleteMapping("/{commentId}")
-    public void deleteComment(@PathVariable Long commentId,
-                              @AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable Long recipeId) {
+    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId,
+                                              @AuthenticationPrincipal CustomUserDetails userDetails,
+                                              @PathVariable Long recipeId) {
         commentService.deleteComment(commentId, userDetails.getUserId());
+        return ResponseEntity.noContent().build();
     }
 }

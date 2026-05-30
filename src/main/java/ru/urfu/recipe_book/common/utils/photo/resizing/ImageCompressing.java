@@ -35,18 +35,11 @@ public class ImageCompressing {
             return ".";
         }
 
-        switch (contentType) {
-            case "image/jpg":
-                return "jpg";
-
-            case "image/jpeg":
-                return "jpeg";
-
-            case "image/png":
-                return "png";
-
-            default:
-                return "";
-        }
+        return switch (contentType) {
+            case "image/jpg" -> "jpg";
+            case "image/jpeg" -> "jpeg";
+            case "image/png" -> "png";
+            default -> "";
+        };
     }
 }

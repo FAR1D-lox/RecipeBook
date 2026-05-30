@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import ru.urfu.recipe_book.comment.repository.CommentRepository;
+import ru.urfu.recipe_book.common.exception.ForbiddenOperationException;
+import ru.urfu.recipe_book.common.exception.ResourceNotFoundException;
 import ru.urfu.recipe_book.common.markdown.MarkdownService;
 import ru.urfu.recipe_book.recipe.dto.CreateRecipeDto;
 import ru.urfu.recipe_book.common.entities.CursorPageResponse;
@@ -47,7 +49,8 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public RecipeResponseDto createRecipe(Long authorId, CreateRecipeDto recipeDto) {
         Recipe recipe = recipeMapper.toEntity(recipeDto);
-        recipe.setAuthor(userRepository.findById(authorId).orElseThrow(() -> new RuntimeException("user not found")));
+        recipe.setAuthor(userRepository.findById(authorId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found")));
         recipe.setCreatedAt(OffsetDateTime.now());
         recipeRepository.save(recipe);
         return putHtml(recipe);
@@ -96,18 +99,23 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public RecipeResponseDto findRecipeById(Long recipeId) {
-        Recipe recipe = recipeRepository.findRecipeById(recipeId);
+        Recipe recipe = recipeRepository.findRecipeById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
         return putHtml(recipe);
     }
 
     @Transactional
     public void deleteRecipe(Long id, Long userId) {
-        if (recipeRepository.existsById(id)) {
-            commentRepository.deleteByRecipeId(id);
-            if (!recipeRepository.findRecipeById(id).getAuthor().getId().equals(userId)) {
-                throw new RuntimeException("you can't delete foreign recipe");
-            }
-            recipeRepository.deleteById(id);
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
+
+        if (!recipe.getAuthor().getId().equals(userId)) {
+            throw new ForbiddenOperationException("You can't delete foreign recipes");
         }
+
+        commentRepository.deleteByRecipeId(id);
+
+        recipeRepository.deleteById(id);
     }
+
 }
