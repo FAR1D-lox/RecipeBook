@@ -10,12 +10,13 @@ import ru.urfu.recipe_book.user.entity.User;
 
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     List<Recipe> findRecipesByAuthorId(Long authorId);
 
-    Recipe findRecipeById(Long id);
+    Optional<Recipe> findRecipeById(Long id);
 
     List<Recipe> findByTitleContainingIgnoreCase(String title);
 

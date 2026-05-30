@@ -4,9 +4,11 @@ import io.minio.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.urfu.recipe_book.common.utils.photo.resizing.ImageCompressing;
+import ru.urfu.recipe_book.common.utils.photo.validation.FileValidator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,6 +23,10 @@ import java.util.UUID;
 public class MinioService {
     private final MinioClient minioClient;
     private final ImageCompressing imageCompressing;
+    private final FileValidator fileValidator;
+
+    @Value("${minio.url}")
+    private String minioUrl;
 
     public void bucketExists(String bucketName) throws Exception {
         boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
@@ -33,6 +39,12 @@ public class MinioService {
     }
 
     public String putObject(String bucketName, MultipartFile file, int compressedImageWidth, int compressedImageHeight) throws Exception {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("file is empty");
+        }
+
+        fileValidator.validateFileContent(file);
+
         bucketExists(bucketName);
 
         File tempFile = null;
@@ -54,16 +66,16 @@ public class MinioService {
             tempFile = imageCompressing.compressImage(file, compressedImageWidth, compressedImageHeight);
 
 
-            try (FileInputStream compressedStream = new FileInputStream(tempFile)) {
-                minioClient.putObject(
-                        PutObjectArgs.builder()
-                                .bucket(bucketName)
-                                .object("compressed/" + newFilename)
-                                .stream(compressedStream, tempFile.length(), -1)
-                                .contentType(file.getContentType())
-                                .build()
-                );
-            }
+        try (FileInputStream compressedStream = new FileInputStream(tempFile)) {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object("compressed/" + newFilename)
+                            .stream(compressedStream, tempFile.length(), -1)
+                            .contentType(file.getContentType())
+                            .build()
+            );
+        }
 
         } finally {
 
@@ -72,6 +84,6 @@ public class MinioService {
             }
         }
 
-        return "http://localhost:9000/" + bucketName + "/compressed/" + newFilename;
+        return minioUrl + bucketName + "/compressed/" + newFilename;
     }
 }
