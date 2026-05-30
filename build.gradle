@@ -52,6 +52,8 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
 	implementation 'com.vladsch.flexmark:flexmark-all:0.64.8'
+
+	implementation 'org.apache.tika:tika-core:3.3.0'
 }
 
 tasks.named('test') {
