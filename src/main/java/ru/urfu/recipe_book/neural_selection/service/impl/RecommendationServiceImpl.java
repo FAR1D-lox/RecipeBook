@@ -24,6 +24,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     private final VectorService vectorService;
     private final RecipeMapper recipeMapper;
     private final Random random = new Random();
+    private final static int COUNT_RECOMMENDATIONS = 10;
 
     @Override
     public List<RecipeResponseDto> getRecommendedRecipes(Long userId) {
@@ -39,9 +40,10 @@ public class RecommendationServiceImpl implements RecommendationService {
                     double similarity = vectorService.cosSimilarity(userVector, recipeVector);
                     double randomFactor = random.nextDouble();
                     double finalScore = similarity + randomFactor;
+
                     return new ScoredRecipe(recipe, finalScore);
                 }).sorted((a, b) -> Double.compare(b.score(), a.score()))
-                .limit(10)
+                .limit(COUNT_RECOMMENDATIONS)
                 .toList();
 
         return scoredRecipes

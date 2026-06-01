@@ -14,8 +14,23 @@ public interface
 ReactionRepository extends JpaRepository<Reaction, Long> {
     Optional<Reaction> findByUserAndRecipeId(User user, Long recipeId);
 
-    @Query ("SELECT COUNT(1) FROM Reaction l WHERE l.recipe.id = :recipeId AND l.liked = :liked")
-    Long countByRecipeIdAndLiked(@Param("recipeId") Long recipeId, @Param("liked") Boolean liked);
-
     void deleteByUser(User user);
+
+    @Modifying
+    @Query(value = """
+            UPDATE recipe r
+            SET likes_count = r.likes_count - COALESCE((
+                SELECT COUNT(1) FROM likes l
+                WHERE l.recipe_id = r.id
+                AND l.liked = true
+                AND l.user_id = :userId)
+            , 0),
+            dislikes_count = r.dislikes_count - COALESCE((
+                SELECT COUNT(1) FROM likes l
+                WHERE l.recipe_id = r.id
+                AND l.liked = false
+                AND l.user_id = :userId
+            ), 0)
+            """, nativeQuery = true)
+    void updateCountersReactionsForRecipes(@Param("userId") Long userId);
 }

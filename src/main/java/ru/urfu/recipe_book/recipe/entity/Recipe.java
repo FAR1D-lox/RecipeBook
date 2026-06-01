@@ -46,6 +46,10 @@ public class Recipe extends BaseEntity {
 
     private Long commentsCount = 0L;
 
+    private Long likesCount = 0L;
+
+    private Long dislikesCount = 0L;
+
 
     @ElementCollection
     @CollectionTable(name = "recipe_tags",

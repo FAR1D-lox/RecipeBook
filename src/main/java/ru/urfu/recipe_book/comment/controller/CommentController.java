@@ -19,7 +19,7 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<ResponseCommentDto> addComment(@PathVariable Long recipeId,
                                                          @AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                          @RequestBody CreateCommentDto commentDto) {
@@ -36,7 +36,7 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(@PathVariable Long commentId,
                                               @AuthenticationPrincipal CustomUserDetails userDetails,
                                               @PathVariable Long recipeId) {
-        commentService.deleteComment(commentId, userDetails.getUserId());
+        commentService.deleteComment(commentId, userDetails.getUserId(), recipeId);
         return ResponseEntity.noContent().build();
     }
 }

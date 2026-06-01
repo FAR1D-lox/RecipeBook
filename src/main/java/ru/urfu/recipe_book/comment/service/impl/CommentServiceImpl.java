@@ -1,5 +1,6 @@
 package ru.urfu.recipe_book.comment.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.urfu.recipe_book.comment.dto.CommentMapper;
@@ -48,6 +49,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public ResponseCommentDto addComment(Long recipeId, Long userId, CreateCommentDto commentDto) {
         Comment comment = commentMapper.toEntity(commentDto);
 
@@ -62,6 +64,8 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.save(comment);
 
+        recipeRepository.incrementCommentsCount(recipeId);
+
         return putHtml(comment);
     }
 
@@ -73,13 +77,18 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void deleteComment(Long commentId, Long userId) {
+    @Transactional
+    public void deleteComment(Long commentId, Long userId, Long recipeId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
         if (!comment.getAuthor().getId().equals(userId)) {
             throw new ForbiddenOperationException("You can't delete foreign comment");
         }
+        if (!comment.getRecipe().getId().equals(recipeId)) {
+            throw new ForbiddenOperationException("You can't delete foreign comment");
+        }
+        recipeRepository.decrementCommentsCount(recipeId);
         commentRepository.deleteById(commentId);
     }
 }

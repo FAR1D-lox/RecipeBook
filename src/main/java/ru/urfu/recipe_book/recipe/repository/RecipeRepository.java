@@ -29,5 +29,30 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     List<Recipe> findTop1000ByOrderByCreatedAtDesc();
 
+    @Modifying
+    @Query("UPDATE Recipe r SET r.commentsCount = r.commentsCount + 1 WHERE r.id = :recipeId")
+    void incrementCommentsCount(@Param("recipeId") Long recipeId);
+
+    @Modifying
+    @Query("UPDATE Recipe r SET r.commentsCount = r.commentsCount - 1 WHERE r.id = :recipeId")
+    void decrementCommentsCount(@Param("recipeId") Long recipeId);
+
+    @Modifying
+    @Query("UPDATE Recipe r SET r.likesCount = r.likesCount + 1 WHERE r.id = :recipeId")
+    void incrementLikesCount(@Param("recipeId") Long recipeId);
+
+    @Modifying
+    @Query("UPDATE Recipe r SET r.likesCount = r.likesCount - 1 WHERE r.id = :recipeId")
+    void decrementLikesCount(@Param("recipeId") Long recipeId);
+
+    @Modifying
+    @Query("UPDATE Recipe r SET r.dislikesCount = r.dislikesCount + 1 WHERE r.id = :recipeId")
+    void incrementDislikesCount(@Param("recipeId") Long recipeId);
+
+    @Modifying
+    @Query("UPDATE Recipe r SET r.dislikesCount = r.dislikesCount - 1 WHERE r.id = :recipeId")
+    void decrementDislikesCount(@Param("recipeId") Long recipeId);
+
+
     void deleteByAuthor(User user);
 }

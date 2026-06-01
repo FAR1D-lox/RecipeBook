@@ -31,7 +31,8 @@ public class SecurityConfig {
                                 "/recipes",
                                 "/recipes/search",
                                 "/recipes/author/*",
-                                "/recipes/*/likes/stats"
+                                "/recipes/*/likes/stats",
+                                "/users/search"
                         ).permitAll()
                         .requestMatchers(
                                 HttpMethod.GET, "/recipes/*/comments"

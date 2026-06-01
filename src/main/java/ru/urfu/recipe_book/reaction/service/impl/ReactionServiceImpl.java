@@ -1,7 +1,9 @@
 package ru.urfu.recipe_book.reaction.service.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.urfu.recipe_book.common.exception.ResourceNotFoundException;
 import ru.urfu.recipe_book.recipe.entity.Recipe;
 import ru.urfu.recipe_book.recipe.repository.RecipeRepository;
 import ru.urfu.recipe_book.reaction.dto.ReactionStatsDto;
@@ -20,6 +22,7 @@ public class ReactionServiceImpl implements ReactionService {
     private final UserRepository userRepository;
     private final RecipeRepository recipeRepository;
 
+    @Transactional
     @Override
     public ResponseReactionDto addReaction(Long recipeId, Long userId, boolean liked) {
 
@@ -31,7 +34,17 @@ public class ReactionServiceImpl implements ReactionService {
         Reaction exitingReaction = reactionRepository.findByUserAndRecipeId(user, recipeId).orElse(null);
 
         if (exitingReaction != null) {
-            exitingReaction.setLiked(liked);
+            if (exitingReaction.isLiked() != liked) {
+                exitingReaction.setLiked(liked);
+                if (liked) {
+                    recipeRepository.incrementLikesCount(recipeId);
+                    recipeRepository.decrementDislikesCount(recipeId);
+                }
+                else {
+                    recipeRepository.incrementDislikesCount(recipeId);
+                    recipeRepository.decrementLikesCount(recipeId);
+                }
+            }
             Reaction save = reactionRepository.save(exitingReaction);
             return new ResponseReactionDto(
                     save.getRecipe().getId(),
@@ -46,6 +59,11 @@ public class ReactionServiceImpl implements ReactionService {
             reaction.setRecipe(recipe);
             reaction.setLiked(liked);
 
+            if (liked)
+                recipeRepository.incrementLikesCount(recipeId);
+            else
+                recipeRepository.incrementDislikesCount(recipeId);
+
             Reaction save = reactionRepository.save(reaction);
             return new ResponseReactionDto(
                     save.getRecipe().getId(),
@@ -56,12 +74,19 @@ public class ReactionServiceImpl implements ReactionService {
         }
     }
 
+    @Transactional
     @Override
     public void undoReaction(Long recipeId, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         Reaction reaction = reactionRepository.findByUserAndRecipeId(user, recipeId)
                 .orElseThrow(() -> new RuntimeException("Reaction not found"));
+        Recipe recipe = recipeRepository.findRecipeById(recipeId)
+                .orElseThrow(() -> new RuntimeException("Recipe not found: " + recipeId));
+        if (reaction.isLiked())
+            recipeRepository.decrementLikesCount(recipeId);
+        else
+            recipeRepository.decrementDislikesCount(recipeId);
         reactionRepository.delete(reaction);
     }
 
@@ -82,8 +107,10 @@ public class ReactionServiceImpl implements ReactionService {
 
     @Override
     public ReactionStatsDto getRecipeStats(Long recipeId, Long userId) {
-        Long likesCount = reactionRepository.countByRecipeIdAndLiked(recipeId, true);
-        Long dislikesCount = reactionRepository.countByRecipeIdAndLiked(recipeId, false);
+        Recipe recipe = recipeRepository.findRecipeById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
+        Long likesCount = recipe.getLikesCount();
+        Long dislikesCount = recipe.getDislikesCount();
 
         Long currentUserReaction = null;
         User user = userRepository.findById(userId)

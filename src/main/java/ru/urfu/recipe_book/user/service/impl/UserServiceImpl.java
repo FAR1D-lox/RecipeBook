@@ -141,8 +141,13 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findById(userId)
                         .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        reactionRepository.updateCountersReactionsForRecipes(userId);
         reactionRepository.deleteByUser(user);
+
+        commentRepository.updateCountersCommentsForRecipes(userId);
         commentRepository.deleteByAuthor(user);
+
+
         recipeRepository.deleteByAuthor(user);
         favoriteRepository.deleteByUser(user);
 

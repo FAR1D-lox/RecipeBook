@@ -11,5 +11,5 @@ public interface CommentService {
 
     List<ResponseCommentDto> getCommentsByRecipe(Long recipeId);
 
-    void deleteComment(Long commentId, Long userId);
+    void deleteComment(Long commentId, Long userId, Long recipeId);
 }

@@ -40,6 +40,8 @@ public class UserController {
         return userService.searchUsers(cursor, size, username);
     }
 
+
+
     @PutMapping()
     ResponseUserDto updateUser(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
