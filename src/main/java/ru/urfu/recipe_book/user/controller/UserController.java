@@ -40,7 +40,15 @@ public class UserController {
         return userService.searchUsers(cursor, size, username);
     }
 
+    @GetMapping("/me")
+    ResponseUserDto me(@AuthenticationPrincipal CustomUserDetails details) {
+        return userService.getUserById(details.getUserId());
+    }
 
+    @GetMapping("/{id}")
+    ResponseUserDto getUser(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
 
     @PutMapping()
     ResponseUserDto updateUser(

@@ -8,19 +8,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import ru.urfu.recipe_book.comment.controller.CommentController;
 import ru.urfu.recipe_book.common.exception.ErrorResponse;
 import ru.urfu.recipe_book.common.exception.ForbiddenOperationException;
 import ru.urfu.recipe_book.common.exception.ResourceNotFoundException;
 import ru.urfu.recipe_book.common.exception.StorageException;
-import ru.urfu.recipe_book.common.utils.minio.MinioController;
-import ru.urfu.recipe_book.recipe.controller.RecipeController;
 
-@RestControllerAdvice(assignableTypes = {
-        RecipeController.class,
-        CommentController.class,
-        MinioController.class
-})
+@RestControllerAdvice
 public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler({
@@ -41,6 +34,12 @@ public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex) {
+        // Для доменных ошибок (например, "Email already exists") пусть будет 400 с сообщением.
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

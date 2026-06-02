@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 import ru.urfu.recipe_book.recipe.dto.CreateRecipeDto;
 import ru.urfu.recipe_book.recipe.dto.RecipeResponseDto;
+import ru.urfu.recipe_book.recipe.dto.UpdateRecipeDto;
 import ru.urfu.recipe_book.recipe.service.RecipeService;
 import ru.urfu.recipe_book.security.CustomUserDetails;
 
@@ -49,6 +50,14 @@ public class RecipeController {
     @GetMapping(value = "/search")
     public ResponseEntity<List<RecipeResponseDto>> searchRecipes(@RequestParam String query) {
         return ResponseEntity.ok(recipeService.searchRecipes(query));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RecipeResponseDto> updateRecipe(
+            @PathVariable Long id,
+            @RequestBody UpdateRecipeDto updateDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(recipeService.updateRecipe(id, userDetails.getUserId(), updateDto));
     }
 
     @DeleteMapping(value = "/{id}")

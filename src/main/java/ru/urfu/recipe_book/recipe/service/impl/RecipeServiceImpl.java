@@ -12,6 +12,7 @@ import ru.urfu.recipe_book.recipe.dto.CreateRecipeDto;
 import ru.urfu.recipe_book.common.entities.CursorPageResponse;
 import ru.urfu.recipe_book.recipe.dto.RecipeMapper;
 import ru.urfu.recipe_book.recipe.dto.RecipeResponseDto;
+import ru.urfu.recipe_book.recipe.dto.UpdateRecipeDto;
 import ru.urfu.recipe_book.recipe.entity.Recipe;
 import ru.urfu.recipe_book.recipe.repository.RecipeRepository;
 import ru.urfu.recipe_book.recipe.service.RecipeService;
@@ -116,6 +117,21 @@ public class RecipeServiceImpl implements RecipeService {
         commentRepository.deleteByRecipeId(id);
 
         recipeRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public RecipeResponseDto updateRecipe(Long recipeId, Long userId, UpdateRecipeDto updateDto) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
+
+        if (!recipe.getAuthor().getId().equals(userId)) {
+            throw new ForbiddenOperationException("You can't edit foreign recipes");
+        }
+
+        recipeMapper.updateEntity(updateDto, recipe);
+        recipeRepository.save(recipe);
+        return putHtml(recipe);
     }
 
 }

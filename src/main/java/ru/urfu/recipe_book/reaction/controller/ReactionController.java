@@ -1,7 +1,6 @@
 package ru.urfu.recipe_book.reaction.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.urfu.recipe_book.reaction.dto.CreateReactionDto;
@@ -41,7 +40,8 @@ public class ReactionController {
     @GetMapping("/stats")
     public ReactionStatsDto getRecipeStats(
             @PathVariable Long recipeId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return reactionService.getRecipeStats(recipeId, customUserDetails.getUserId());
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails != null ? userDetails.getUserId() : null;
+        return reactionService.getRecipeStats(recipeId, userId);
     }
 }

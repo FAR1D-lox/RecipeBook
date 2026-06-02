@@ -113,8 +113,10 @@ public class ReactionServiceImpl implements ReactionService {
         Long dislikesCount = recipe.getDislikesCount();
 
         Long currentUserReaction = null;
-        User user = userRepository.findById(userId)
-                .orElseThrow(null);
+        User user = null;
+        if (userId != null) {
+            user = userRepository.findById(userId).orElse(null);
+        }
 
         if (user != null) {
             Long[] reactionHolder = new Long[1];

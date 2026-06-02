@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.urfu.recipe_book.comment.repository.CommentRepository;
+import ru.urfu.recipe_book.common.exception.ResourceNotFoundException;
 import ru.urfu.recipe_book.common.enums.Role;
 import ru.urfu.recipe_book.favorite.repository.FavoriteRepository;
 import ru.urfu.recipe_book.reaction.repository.ReactionRepository;
@@ -94,6 +95,13 @@ public class UserServiceImpl implements UserService {
                 nextCursor,
                 hasNext
         );
+    }
+
+    @Override
+    public ResponseUserDto getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userMapper.toResponseUser(user);
     }
 
     @Override
