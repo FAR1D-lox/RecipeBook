@@ -1,6 +1,7 @@
 package ru.urfu.recipe_book.common.utils.minio;
 
 import io.minio.*;
+import io.minio.http.Method;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -94,6 +96,20 @@ public class MinioService {
             }
         }
 
-        return minioUrl + "/" + bucketName + "/compressed/" + newFilename;
+        try {
+            // Бакеты MinIO приватные — выдаём подписанную ссылку на скачивание.
+            // Это позволит фронту показывать <img src="..."> без AccessDenied.
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucketName)
+                            .object("compressed/" + newFilename)
+                            .expiry(7, TimeUnit.DAYS)
+                            .build()
+            );
+        } catch (Exception e) {
+            // Фоллбек на прямую ссылку (может быть AccessDenied, но лучше чем 500)
+            return minioUrl + "/" + bucketName + "/compressed/" + newFilename;
+        }
     }
 }

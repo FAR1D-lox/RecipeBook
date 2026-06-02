@@ -26,6 +26,7 @@ public class User extends BaseEntity {
 
     private String password;
 
+    @Column(columnDefinition = "TEXT")
     private String avatarUrl;
 
     private boolean isActive;

@@ -40,6 +40,32 @@ VITE_API_URL=http://localhost:8080
 
 ---
 
+## Важно про картинки (MinIO AccessDenied)
+
+Если по прямой ссылке на файл MinIO возвращает:
+
+```xml
+<Code>AccessDenied</Code>
+```
+
+— значит бакеты MinIO приватные, и `<img src="http://localhost:9000/...">` не сможет их показать.
+
+Так как **бэкенд не выдаёт presigned URL**, нужно сделать бакеты публичными на чтение.
+
+### Автоматически (PowerShell)
+
+Запусти (при работающем MinIO из `docker compose up -d`):
+
+```powershell
+cd frontend
+.\scripts\make-minio-buckets-public.ps1
+```
+
+Скрипт выставит public-read для бакетов:
+- `avatars`
+- `recipes`
+- `comments`
+
 ## API, используемый frontend
 
 - `POST /users/register`, `POST /users/login`

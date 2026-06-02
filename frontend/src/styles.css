@@ -657,6 +657,18 @@ select:focus {
   margin: 0.35rem 0 0;
 }
 
+.comment-content {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.comment-img {
+  max-width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
 .comment-meta {
   display: flex;
   justify-content: space-between;

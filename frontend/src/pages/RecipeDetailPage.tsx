@@ -17,6 +17,54 @@ import { HttpError } from '../api/client';
 import type { Comment, Favorite, ReactionStats, Recipe } from '../types';
 import { stripHtmlTags } from '../utils/text';
 
+function renderCommentContent(raw: string): React.ReactNode {
+  const safe = stripHtmlTags(raw);
+  const re = /!\[[^\]]*\]\(([^)]+)\)/g; // markdown image
+
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = re.exec(safe)) !== null) {
+    const idx = match.index;
+    const url = match[1];
+
+    const before = safe.slice(lastIndex, idx);
+    if (before.trim().length > 0) {
+      parts.push(
+        <span key={`t-${lastIndex}`} style={{ whiteSpace: 'pre-wrap' }}>
+          {before}
+        </span>,
+      );
+    }
+
+    if (url) {
+      parts.push(
+        <img
+          key={`i-${idx}`}
+          src={url}
+          alt=""
+          className="comment-img"
+          loading="lazy"
+        />,
+      );
+    }
+
+    lastIndex = idx + match[0].length;
+  }
+
+  const tail = safe.slice(lastIndex);
+  if (tail.trim().length > 0) {
+    parts.push(
+      <span key={`t-${lastIndex}`} style={{ whiteSpace: 'pre-wrap' }}>
+        {tail}
+      </span>,
+    );
+  }
+
+  return parts.length ? <div className="comment-content">{parts}</div> : null;
+}
+
 export function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const recipeId = Number(id);
@@ -327,7 +375,7 @@ export function RecipeDetailPage() {
                   </button>
                 )}
               </div>
-              <p>{stripHtmlTags(c.text)}</p>
+              {renderCommentContent(c.text)}
             </li>
           ))}
         </ul>
